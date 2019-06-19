@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c1963c4-9d3c-4024-8add-acdb13449a5a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/seo_app/views/personal_center.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/views/personal_center.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seo_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seo_app/views/personal_center.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/views/shopify_auth.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -54,11 +55,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/seo_app/urls.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="88">
-              <caret line="4" column="51" selection-start-line="4" selection-start-column="51" selection-end-line="4" selection-end-column="51" />
+              <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -80,8 +81,8 @@
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/seo_app/views/personal_center.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/seo_app/views/shopify_auth.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="131">
               <caret line="45" selection-start-line="45" selection-end-line="45" />
@@ -126,11 +127,11 @@
         <option value="$PROJECT_DIR$/seo/urls.py" />
         <option value="$PROJECT_DIR$/seo_app/utils.py" />
         <option value="$PROJECT_DIR$/seo_app/utils/random_code.py" />
-        <option value="$PROJECT_DIR$/seo_app/urls.py" />
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/seo/settings.py" />
         <option value="$PROJECT_DIR$/seo/__init__.py" />
         <option value="$PROJECT_DIR$/seo_app/views/personal_center.py" />
+        <option value="$PROJECT_DIR$/seo_app/urls.py" />
       </list>
     </option>
   </component>
@@ -158,12 +159,6 @@
               <item name="seo" type="b2602c69:ProjectViewProjectNode" />
               <item name="seo" type="462c0819:PsiDirectoryNode" />
               <item name="seo_app" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="seo" type="b2602c69:ProjectViewProjectNode" />
-              <item name="seo" type="462c0819:PsiDirectoryNode" />
-              <item name="seo_app" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="seo" type="b2602c69:ProjectViewProjectNode" />
@@ -241,12 +236,12 @@
       <option name="presentableId" value="Default" />
       <updated>1560928272361</updated>
       <workItem from="1560928275239" duration="745000" />
-      <workItem from="1560929330438" duration="2924000" />
+      <workItem from="1560929330438" duration="3090000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3669000" />
+    <option name="totallyTimeSpent" value="3835000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1768" y="-200" width="1840" height="1057" extended-state="0" />
@@ -353,22 +348,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/seo_app/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="4" column="51" selection-start-line="4" selection-start-column="51" selection-end-line="4" selection-end-column="51" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/seo_app/views/personal_center.py">
+    <entry file="file://$PROJECT_DIR$/seo_app/views/shopify_auth.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="131">
           <caret line="45" selection-start-line="45" selection-end-line="45" />
           <folding>
             <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/seo_app/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="88">
+          <caret line="4" lean-forward="true" selection-start-line="4" selection-end-line="4" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
           </folding>
         </state>
       </provider>
