@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import datetime,random
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,7 +26,7 @@ SECRET_KEY = 'z&y0=8)b&9h4tvh+$=#0l&8kxy%5p%@jmxc_#57h8nh$02=y2d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'seo_app',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'seo_app.middleware.ResponseMiddleware'
 ]
 
 ROOT_URLCONF = 'seo.urls'
@@ -118,3 +122,19 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+AUTH_USER_MODEL = "seo_app.User"
+
+APPEND_SLASH = False
+
+
+list_str = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 's', 't', 'x', 'y',
+            'z']
+
+JWT_AUTH_HEADER_PREFIX = "".join(random.sample(list_str, 4))
+
+JWT_AUTH = {
+    'JWT_AUTH_HEADER_PREFIX': JWT_AUTH_HEADER_PREFIX,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_SECRET_KEY': 'seo',
+}
