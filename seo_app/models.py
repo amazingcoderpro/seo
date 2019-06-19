@@ -29,7 +29,8 @@ class Store(models.Model):
     )
     token = models.CharField(blank=True, null=True, max_length=255, verbose_name="账号使用标识")
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING, blank=True, null=True, unique=True)
-
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
         db_table = 'store'
@@ -50,6 +51,9 @@ class Product(models.Model):
     remark_description = models.TextField(blank=True, null=True, verbose_name="产品description_remark")
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
     class Meta:
         # managed = False
         db_table = 'product'
@@ -62,6 +66,8 @@ class Variants(models.Model):
     size = models.CharField(db_index=True, max_length=255, verbose_name="产品尺寸")
     price = models.CharField(db_index=True, max_length=255, verbose_name="产品价格")
     product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
         db_table = 'product_variants'
