@@ -2,12 +2,11 @@
 ```
 INSERT INTO `user` (`id`, `last_login`, `is_superuser`, `first_name`, `last_name`, `is_staff`, `is_active`, `date_joined`, `username`, `email`, `password`, `code`, `create_time`, `update_time`)
 VALUES
-	(5, NULL, 0, 'Tiptopfree', 'SEA', 0, 1, '2019-06-13 19:59:20.841303', 'tiptopfree.myshopify.com', 'service@tiptopfree.com', 'pbkdf2_sha256$120000$80m7eexzlrOI$VECOj4WpfkgCHLTFqQhibZY7dW2L1be7VRG0vBDKvws=', 'pOmaa0', '2019-06-13 19:59:20.856436', '2019-06-17 17:18:35.669399');
+	(1, NULL, 0, 'Tiptopfree', 'SEO', 0, 1, '2019-06-13 19:59:20.841303', 'tiptopfree.myshopify.com', 'service@tiptopfree.com', 'pbkdf2_sha256$120000$80m7eexzlrOI$VECOj4WpfkgCHLTFqQhibZY7dW2L1be7VRG0vBDKvws=', 'pOmaa0', '2019-06-13 19:59:20.856436', '2019-06-17 17:18:35.669399');
 
-INSERT INTO `store` (`id`, `name`, `url`, `email`, `visitors`, `scan`, `sale`, `token`, `create_time`, `update_time`, `uuid`, `timezone`, `country`, `city`, `currency`, `owner_name`, `owner_phone`, `store_create_time`, `store_update_time`, `store_view_id`, `platform_id`, `user_id`)
+INSERT INTO `store` (`id`, `name`, `url`, `email`, `create_time`, `update_time`,  `user_id`)
 VALUES
-	(5, 'tiptopfree', 'www.tiptopfree.com', 'service@tiptopfree.com', 0, 0, 0, 'b5e11d595f09d8e99ddb956f72eb8c84', '2019-06-13 19:59:20.413463', '2019-06-14 15:14:27.352727', '3172761645', '(GMT+08:00) Asia/Shanghai', 'China', 'guanngzhou', 'USD', 'Alicia Wang', '15976433646', '2019-05-10 00:06:50.000000', '2019-06-10 10:08:56.000000', '195406097', 1, 5);
-
+	(1, 'tiptopfree', 'www.tiptopfree.com', 'service@tiptopfree.com', '2019-06-13 19:59:20.413463', '2019-06-14 15:14:27.352727',1);
 
 ```
 
