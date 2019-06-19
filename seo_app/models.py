@@ -28,6 +28,8 @@ class Store(models.Model):
         blank=True,
     )
     token = models.CharField(blank=True, null=True, max_length=255, verbose_name="账号使用标识")
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING, blank=True, null=True, unique=True)
+
 
     class Meta:
         db_table = 'store'
@@ -44,6 +46,9 @@ class Product(models.Model):
     type = models.SmallIntegerField(choices=type_choices, default=0, verbose_name="产品类型")
     title = models.CharField(db_index=True, max_length=255, verbose_name="产品title")
     description = models.TextField(blank=True, null=True, verbose_name="产品描述")
+    remark_title = models.TextField(blank=True, null=True, verbose_name="产品title_remark")
+    remark_description = models.TextField(blank=True, null=True, verbose_name="产品description_remark")
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     class Meta:
         # managed = False

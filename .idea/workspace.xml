@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c1963c4-9d3c-4024-8add-acdb13449a5a" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/seo_app/views/personal_center.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/seo/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/seo_app/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/seo_app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/models.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,11 +21,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/seo_app/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1342">
-              <caret line="61" column="29" selection-start-line="61" selection-start-column="29" selection-end-line="61" selection-end-column="29" />
+            <state relative-caret-position="304">
+              <caret line="31" selection-start-line="31" selection-end-line="31" />
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
@@ -48,14 +45,23 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/seo_app/views/personal_center.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="220">
-              <caret line="10" column="23" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="23" />
+              <caret line="10" column="34" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="34" />
               <folding>
                 <element signature="e#1193#3024#0" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/seo_app/permission/permission.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="44">
+              <caret line="2" selection-start-line="2" selection-end-line="2" />
             </state>
           </provider>
         </entry>
@@ -77,15 +83,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="22">
               <caret line="1" column="8" selection-start-line="1" selection-start-column="8" selection-end-line="1" selection-end-column="8" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/seo/settings.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="241">
-              <caret line="146" selection-start-line="146" selection-end-line="146" />
             </state>
           </provider>
         </entry>
@@ -128,7 +125,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/seo_app/middleware.py" />
-        <option value="$PROJECT_DIR$/seo_app/models.py" />
         <option value="$PROJECT_DIR$/seo/urls.py" />
         <option value="$PROJECT_DIR$/seo_app/utils.py" />
         <option value="$PROJECT_DIR$/seo_app/utils/random_code.py" />
@@ -140,12 +136,14 @@
         <option value="$PROJECT_DIR$/seo/settings.py" />
         <option value="$PROJECT_DIR$/seo_app/utils/send_sms_agent.py" />
         <option value="$PROJECT_DIR$/seo_app/views/personal_center.py" />
+        <option value="$PROJECT_DIR$/seo_app/permission/permission.py" />
+        <option value="$PROJECT_DIR$/seo_app/models.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-1677" />
-    <option name="y" value="-226" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="-1796" />
+    <option name="y" value="31" />
     <option name="width" value="1840" />
     <option name="height" value="1057" />
   </component>
@@ -212,6 +210,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/seo_app/permission" />
       <recent name="$PROJECT_DIR$/seo_app/utils" />
       <recent name="$PROJECT_DIR$" />
     </key>
@@ -268,15 +267,16 @@
       <option name="presentableId" value="Default" />
       <updated>1560928272361</updated>
       <workItem from="1560928275239" duration="745000" />
-      <workItem from="1560929330438" duration="4106000" />
+      <workItem from="1560929330438" duration="4411000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4851000" />
+    <option name="totallyTimeSpent" value="5156000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1765" y="88" width="1840" height="1057" extended-state="0" />
+    <frame x="-1796" y="31" width="1840" height="1057" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20244716" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -292,7 +292,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.3673036" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.4670913" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -354,16 +354,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/seo_app/migrations/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/seo_app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1342">
-          <caret line="61" column="29" selection-start-line="61" selection-start-column="29" selection-end-line="61" selection-end-column="29" />
-          <folding>
-            <element signature="e#0#16#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/seo/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -429,9 +419,26 @@
     <entry file="file://$PROJECT_DIR$/seo_app/views/personal_center.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="220">
-          <caret line="10" column="23" selection-start-line="10" selection-start-column="13" selection-end-line="10" selection-end-column="23" />
+          <caret line="10" column="34" selection-start-line="10" selection-start-column="24" selection-end-line="10" selection-end-column="34" />
           <folding>
             <element signature="e#1193#3024#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/seo_app/permission/permission.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/seo_app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="31" selection-start-line="31" selection-end-line="31" />
+          <folding>
+            <element signature="e#0#16#0" expanded="true" />
           </folding>
         </state>
       </provider>
