@@ -4,6 +4,7 @@ from seo_app.views import shopify_auth, personal_center, product
 # 公共中心 `/v1/`
 v1_urlpatterns = [
     url(r'product/$', product.ProductViews.as_view()),
+    url(r'product_motify/$', product.ProductMotifyViews.as_view()),
 ]
 
 # 认证中心 `/v1/auth/`
