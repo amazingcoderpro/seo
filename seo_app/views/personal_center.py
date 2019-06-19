@@ -6,6 +6,9 @@ from seo_app.utils import random_code
 from rest_framework.response import Response
 from sdk.shopify.shopify_oauth_info import ShopifyBase
 
+from sdk.shopify.get_shopify_products import ProductsApi
+from sdk.shopify import shopify_oauth_info
+
 
 class ShopifyCallback(APIView):
     """shopify 回调接口"""
@@ -29,7 +32,7 @@ class ShopifyCallback(APIView):
             user_instance.save()
             email = user_instance.email
         else:
-            store_data = {"name": shop_name, "url": shop, "token": result["data"], "platform": models.Platform.objects.filter(id=1).first()}
+            store_data = {"name": shop_name, "url": shop, "token": result["data"]}
             instance = models.Store.objects.create(**store_data)
             info = ProductsApi(access_token=result["data"], shop_uri=shop).get_shop_info()
             email = info["data"]["shop"]["email"]
@@ -39,7 +42,6 @@ class ShopifyCallback(APIView):
             instance.email = email
             instance.save()
         return HttpResponseRedirect(redirect_to="https://pinbooster.seamarketings.com/shopfy_regist?shop={}&email={}&id={}".format(shop, email, user_instance.id))
-
 
 
 class ShopifyAuthView(APIView):
