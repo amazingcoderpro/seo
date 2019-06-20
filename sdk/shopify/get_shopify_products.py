@@ -24,7 +24,8 @@ class ProductsApi:
         self.headers = {'Content-Type': 'application/json'}
 
     def get_custom_collections(self):
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}smart_collections.json?limit=250"
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json?ids=126245568576"
+        # shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json"
         try:
             result = requests.get(shop_url)
             if result.status_code == 200:
