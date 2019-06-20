@@ -104,7 +104,7 @@ class TaskProcessor:
                 users = cursor.fetchall()
                 users_list = [user[0] for user in users]
                 cursor.execute(
-                    '''select id, name, url, token, user_id, store_view_id from `store` where user_id in %s''',
+                    '''select id, name, uri, token, user_id from `store` where user_id in %s''',
                     (users_list,))
             stores = cursor.fetchall()
 
@@ -115,23 +115,12 @@ class TaskProcessor:
             for exp in exist_products:
                 exist_products_dict[exp[1]] = exp[0]
 
-            cursor.execute('''select tag from `product_history_data` where id>0''')
-            tags = cursor.fetchall()
-            tag_list = [tag[0] if tag[0] else 0 for tag in tags]
-            tag_max = max(tag_list)
-
             # 遍历数据库中的所有store
             for store in stores:
-                store_id, store_name, store_url, store_token, user_id, store_view_id = store
-                if not all([store_url, store_token]):
+                store_id, store_name, store_uri, store_token, user_id = store
+                if not all([store_uri, store_token]):
                     logger.warning("store url or token is invalid, store id={}".format(store_id))
                     continue
-
-                cursor.execute('''select username from `user` where id=%s''', (user_id,))
-                user = cursor.fetchone()
-                store_uri = ""
-                if user:
-                    store_uri = user[0]
 
                 if "shopify" not in store_uri:
                     logger.error("store uri={}, not illegal")
@@ -160,7 +149,7 @@ class TaskProcessor:
 
                             pro_title = pro.get("title", "")
                             handle = pro.get("handle", "")
-                            pro_url = "https://{}/products/{}".format(store_url, handle)
+                            pro_url = "https://{}/products/{}".format(store_uri, handle)
                             pro_type = pro.get("product_type", "")
                             variants = pro.get("variants", [])
                             pro_sku = ""
@@ -210,11 +199,6 @@ class TaskProcessor:
                             except:
                                 logger.exception("update product exception.")
 
-                            if not store_view_id:
-                                logger.warning(
-                                    "this product have no store view id, product id={}, store id={}".format(pro_id,
-                                                                                                            store_id))
-                                continue
 
                             # pro_uuid = "google" # 测试
                             # ga_data = gapi.get_report(key_word=pro_uuid, start_time="1daysAgo", end_time="today")
@@ -237,7 +221,6 @@ class TaskProcessor:
             cursor.close() if cursor else 0
             conn.close() if conn else 0
         return True
-
 
     def image_2_base64(self, image_src, is_thumb=True, size=(70, 70), format='png'):
         try:
@@ -264,6 +247,29 @@ class TaskProcessor:
             logger.error("image_2_base64 e={}".format(e))
         return base64_str
 
+    def test(self):
+        logger.info("product_collections checking...")
+        try:
+            conn = DBUtil().get_instance()
+            cursor = conn.cursor() if conn else None
+            if not cursor:
+                return False
+
+            cursor.execute('''select id, name, uri, token, user_id from `store` where id = 1''')
+            store = cursor.fetchall()
+            if not store:
+                logger.info("there have no new store to analyze.")
+                return True
+            print(store[0][3])
+            print(store[0][2])
+            # collections = ProductsApi(store[0][3], store[0][2]).metafields()
+            collections = ProductsApi(store[0][3], store[0][2]).get_metafields()
+            print(collections)
+        except Exception as e:
+            pass
+
+
+
 def main():
     tsp = TaskProcessor()
     tsp.start_all(product_collections_interval=3600, product_interval=3600)
@@ -272,4 +278,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    # TaskProcessor().product()
+    TaskProcessor().test()

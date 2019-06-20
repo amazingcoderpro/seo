@@ -17,7 +17,7 @@ djangorestframework-jwt = "*"
 gevent = "*"
 gunicorn = "*"
 supervisor = "*"
-pil = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"

@@ -139,6 +139,49 @@ class ProductsApi:
             return {"code": -1, "msg": str(e), "data": ""}
 
 
+    def metafields(self):
+
+
+        display = {
+          "metafield": {
+            "namespace": "global",
+            "key": "description_tag",
+            "value": "These matte black sunglasses are sure to impress.",
+            "value_type": "string"
+          }
+        }
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/#1831407157293/metafields.json"
+
+        logger.info("url={}, display={}, shop_uri={}".format(shop_url, display, self.shop_uri))
+        try:
+            result = requests.post(shop_url, json.dumps(display), headers=self.headers)
+            if result.status_code == 200:
+                logger.info("get shopify token is successed, shopname={}".format(self.shop_uri))
+                print(result.text)
+                return {"code": 1, "msg": "", "data": json.loads(result.text).get("access_token")}
+            else:
+                logger.error("get shopify token is failed")
+                return {"code": 2, "msg": "oauth failed", "data": ""}
+        except Exception as e:
+            logger.error("get shopify token is exception {}".format(str(e)))
+            return {"code": -1, "msg": str(e), "data": ""}
+
+
+    def get_metafields(self):
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/#1831407157293/metafields.json"
+        try:
+            result = requests.get(shop_url)
+            if result.status_code == 200:
+                logger.info("get shopify info is success")
+                return {"code": 1, "msg": "", "data": json.loads(result.text)}
+            else:
+                logger.info("get shopify info is failed")
+                return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
+        except Exception as e:
+            logger.error("get shopify info is failed info={}".format(str(e)))
+            return {"code": -1, "msg": str(e), "data": ""}
+
+
 if __name__ == '__main__':
     client_id = "7fced15ff9d1a461f10979c3eae2eca8"
     access_token = "b5e11d595f09d8e99ddb956f72eb8c84"
