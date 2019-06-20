@@ -15,8 +15,8 @@ class ProductMotifySerializer(serializers.ModelSerializer):
         model = models.Product
         fields = ("title", "description", "remark_title", "remark_description")
         extra_kwargs = {
-            'title': {'write_only': True, "required":True},
-            'description': {'write_only': True, "required":True},
+            # 'title': {'write_only': True, "required":True},
+            # 'description': {'write_only': True, "required":True},
             'remark_title': {'write_only': True, "required":True},
             'remark_description': {'write_only': True, "required":True}
         }
