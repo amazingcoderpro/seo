@@ -48,179 +48,20 @@ class TaskProcessor:
         self.bk_scheduler.start()
         self.product_collections_job = None
         self.product_job = None
+        self.update_product_job = None
 
     def start_all(self, product_collections_interval=3600,product_interval=3600):
         logger.info("TaskProcessor start all work.")
-        self.start_job_product_collections(product_collections_interval)
-        self.start_job_product_job(product_interval)
-
-    def start_job_product_collections(self, interval):
-        logger.info("start_job_product_collections")
-        self.product_collections()
-        self.product_collections_job = self.bk_scheduler.add_job(self.product_collections, 'interval', seconds=interval, max_instances=50)
-
-    def start_job_product_job(self, interval):
-        logger.info("start_job_product_job")
-        self.product()
-        self.product_job = self.bk_scheduler.add_job(self.product, 'interval', seconds=interval, max_instances=50)
-
-    def product_collections(self):
-        logger.info("product_collections checking...")
-        try:
-            conn = DBUtil().get_instance()
-            cursor = conn.cursor() if conn else None
-            if not cursor:
-                return False
-
-            cursor.execute('''select id, name, uri, token, user_id from `store` where id = 2''')
-            store = cursor.fetchall()
-            if not store:
-                logger.info("there have no new store to analyze.")
-                return True
-            print(store[0][3])
-            print(store[0][2])
-            collections = ProductsApi(store[0][3],store[0][2]).get_custom_collections()
-            print(collections)
-        except Exception as e:
-            pass
-
-    def product(self, url=""):
-        """
-                 获取所有店铺的所有products, 并保存至数据库
-                 :return:
-                 """
-        logger.info("update_shopify_data is cheking...")
-        try:
-            conn = DBUtil().get_instance()
-            cursor = conn.cursor() if conn else None
-            if not cursor:
-                return False
-
-            if url:
-                cursor.execute('''select id, name, url, token, user_id, store_view_id from `store` where url=%s''',
-                               (url,))
-            else:
-                cursor.execute("""select id from `user` where is_active=1""")
-                users = cursor.fetchall()
-                users_list = [user[0] for user in users]
-                cursor.execute(
-                    '''select id, name, uri, token, user_id from `store` where user_id in %s''',
-                    (users_list,))
-            stores = cursor.fetchall()
-
-            # 取中已经存在的所有products, 只需更新即可
-            cursor.execute('''select id, uuid from `product` where id>=0''')
-            exist_products = cursor.fetchall()
-            exist_products_dict = {}
-            for exp in exist_products:
-                exist_products_dict[exp[1]] = exp[0]
-
-            # 遍历数据库中的所有store
-            for store in stores:
-                store_id, store_name, store_uri, store_token, user_id = store
-                if not all([store_uri, store_token]):
-                    logger.warning("store url or token is invalid, store id={}".format(store_id))
-                    continue
-
-                if "shopify" not in store_uri:
-                    logger.error("store uri={}, not illegal")
-                    continue
-
-                # 更新店铺信息
-                papi = ProductsApi(store_token, store_uri)
-
-                since_id = ""
-                max_fetch = 50  # 不管拉没拉完，最多拉250＊50个产品
-                while max_fetch > 0:
-                    max_fetch -= 1
-                    uuid_list = []
-                    ret = papi.get_all_products(limit=250, since_id=since_id)
-                    if ret["code"] == 1:
-                        time_now = datetime.datetime.now()
-                        products = ret["data"].get("products", [])
-                        logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,
-                                                                                                               len(
-                                                                                                                   products)))
-                        for pro in products:
-                            # print(products)
-                            pro_uuid = str(pro.get("id", ""))
-                            if pro_uuid in uuid_list:
-                                continue
-
-                            pro_title = pro.get("title", "")
-                            handle = pro.get("handle", "")
-                            pro_url = "https://{}/products/{}".format(store_uri, handle)
-                            pro_type = pro.get("product_type", "")
-                            variants = pro.get("variants", [])
-                            pro_sku = ""
-
-                            pro_price = 0
-                            if variants:
-                                pro_sku = variants[0].get("sku", "")
-                                pro_price = float(variants[0].get("price", "0"))
-
-                            pro_tags = pro.get("tags", "")
-                            img_obj = pro.get("image", {})
-                            if img_obj:
-                                pro_image = img_obj.get("src", "")
-                            elif pro.get("images", []):
-                                pro_image = pro.get("images")[0]
-                            else:
-                                pro_image = ""
-                            thumbnail = self.image_2_base64(pro_image)
-                            try:
-                                if pro.get("published_at", ""):
-                                    time_str = pro.get("published_at", "")[0:-6]
-                                    pro_publish_time = datetime.datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S")
-                                else:
-                                    pro_publish_time = None
-                            except:
-                                pro_publish_time = None
-
-                            try:
-                                if pro_uuid in exist_products_dict.keys():
-                                    pro_id = exist_products_dict[pro_uuid]
-                                    logger.info(
-                                        "product is already exist, pro_uuid={}, pro_id={}".format(pro_uuid, pro_id))
-                                    cursor.execute(
-                                        '''update `product` set sku=%s, url=%s, name=%s, price=%s, tag=%s, update_time=%s, image_url=%s, thumbnail=%s, publish_time=%s where id=%s''',
-                                        (pro_sku, pro_url, pro_title, pro_price, pro_tags, time_now, pro_image,
-                                         thumbnail, pro_publish_time, pro_id))
-                                else:
-                                    cursor.execute(
-                                        "insert into `product` (`sku`, `url`, `name`, `image_url`,`thumbnail`, `price`, `tag`, `create_time`, `update_time`, `store_id`, `publish_time`, `uuid`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (pro_sku, pro_url, pro_title, pro_image, thumbnail, pro_price, pro_tags,
-                                         time_now,
-                                         time_now, store_id, pro_publish_time, pro_uuid))
-                                    pro_id = cursor.lastrowid
-
-                                conn.commit()
-                                uuid_list.append(pro_uuid)
-                            except:
-                                logger.exception("update product exception.")
-
-
-                            # pro_uuid = "google" # 测试
-                            # ga_data = gapi.get_report(key_word=pro_uuid, start_time="1daysAgo", end_time="today")
-                            time_now = datetime.datetime.now()
-                        # 拉完了
-                        if len(products) < 250:
-                            break
-                        else:
-                            since_id = products[-1].get("id", "")
-                            if not since_id:
-                                break
-                    else:
-                        logger.warning("get shop products failed. ret={}".format(ret))
-                        break
-
-        except Exception as e:
-            logger.exception("get_products e={}".format(e))
-            return False
-        finally:
-            cursor.close() if cursor else 0
-            conn.close() if conn else 0
-        return True
+        # 修改产品类目meta
+        self.motify_product_collections_meta()
+        self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_interval, max_instances=50)
+        # 修改产品meta
+        self.motify_product_meta()
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_interval, max_instances=50)
+        # 更新产品
+        self.update_product()
+        self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
+                                                     max_instances=50)
 
     def image_2_base64(self, image_src, is_thumb=True, size=(70, 70), format='png'):
         try:
@@ -247,26 +88,152 @@ class TaskProcessor:
             logger.error("image_2_base64 e={}".format(e))
         return base64_str
 
-    def test(self):
-        logger.info("product_collections checking...")
+    def motify_product_collections_meta(self):
+        pass
+        # logger.info("product_collections checking...")
+        # try:
+        #     conn = DBUtil().get_instance()
+        #     cursor = conn.cursor() if conn else None
+        #     if not cursor:
+        #         return False
+        #
+        #     cursor.execute('''select id, name, uri, token, user_id from `store` where id = 2''')
+        #     store = cursor.fetchall()
+        #     if not store:
+        #         logger.info("there have no new store to analyze.")
+        #         return True
+        #     print(store[0][3])
+        #     print(store[0][2])
+        #     collections = ProductsApi(store[0][3],store[0][2]).get_custom_collections()
+        #     print(collections)
+        # except Exception as e:
+        #     pass
+
+    def motify_product_meta(self):
+        """修改产品meta"""
+        logger.info("motify_product_meta checking...")
         try:
             conn = DBUtil().get_instance()
             cursor = conn.cursor() if conn else None
             if not cursor:
                 return False
 
-            cursor.execute('''select id, name, uri, token, user_id from `store` where id = 1''')
-            store = cursor.fetchall()
-            if not store:
+            # cursor.execute('''select id, name, uri, token, user_id from `store`''')
+            # store = cursor.fetchall()
+            # if not store:
+            #     logger.info("there have no new store to analyze.")
+            #     return True
+            cursor.execute('''select id, name, uri, token, user_id from `product` where state=1''')
+            product = cursor.fetchall()
+            if not product:
                 logger.info("there have no new store to analyze.")
                 return True
-            print(store[0][3])
-            print(store[0][2])
-            # collections = ProductsApi(store[0][3], store[0][2]).metafields()
-            collections = ProductsApi(store[0][3], store[0][2]).get_metafields()
+
+            collections = ProductsApi(store[0][3], store[0][2]).motify_product_meta(1831407157293, "Brand new title",
+                                                                                    "Brand new description")
             print(collections)
         except Exception as e:
             pass
+
+    def update_product(self, url=""):
+        """
+         获取所有店铺的所有products, 并保存至数据库
+         :return:
+         """
+        logger.info("update_product is cheking...")
+        try:
+            conn = DBUtil().get_instance()
+            cursor = conn.cursor() if conn else None
+            if not cursor:
+                return False
+
+            if url:
+                cursor.execute('''select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1 nad url=%s''',
+                               (url,))
+            else:
+                cursor.execute("""select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+            stores = cursor.fetchall()
+
+            # 取中已经存在的所有products, 只需更新即可
+            cursor.execute('''select id, uuid from `product` where id>=0''')
+            exist_products = cursor.fetchall()
+            exist_products_dict = {}
+            for exp in exist_products:
+                exist_products_dict[exp[1]] = exp[0]
+
+            # 遍历数据库中的所有store，更新产品信息
+            for store in stores:
+                store_id, store_uri, store_token = store
+                if not all([store_uri, store_token]):
+                    logger.warning("store url or token is invalid, store id={}".format(store_id))
+                    continue
+
+                if "shopify" not in store_uri:
+                    logger.error("store uri={}, not illegal")
+                    continue
+
+                # 更新产品信息
+                papi = ProductsApi(store_token, store_uri)
+
+                since_id = ""
+                max_fetch = 50  # 不管拉没拉完，最多拉250＊50个产品
+                while max_fetch > 0:
+                    max_fetch -= 1
+                    uuid_list = []
+                    ret = papi.get_all_products(limit=250, since_id=since_id)
+                    if ret["code"] != 1:
+                        logger.warning("get shop products failed. ret={}".format(ret))
+                        break
+                    if ret["code"] == 1:
+                        products = ret["data"].get("products", [])
+                        logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,len(products)))
+                        for pro in products:
+                            print(products)
+                            uuid = str(pro.get("id", ""))
+                            if uuid in uuid_list:
+                                continue
+
+                            title = pro.get("title", "")
+                            domain = "https://{}/products/{}".format(store_uri, pro.get("handle", ""))
+                            type = pro.get("product_type", "")
+                            variants = pro.get("variants", [])
+                            sku = float(variants[0].get("sku", "0")) if variants else ""
+                            price = variants[0].get("price", "") if variants else 0
+                            time_now = datetime.datetime.now()
+
+                            try:
+                                if uuid in exist_products_dict.keys():
+                                    pro_id = exist_products_dict[uuid]
+                                    logger.info(
+                                        "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
+                                    cursor.execute(
+                                        '''update `product` set sku=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        (sku, price, type, domain, title, time_now, pro_id))
+                                else:
+                                    cursor.execute(
+                                        "insert into `product` (`sku`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        (sku, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
+                                    pro_id = cursor.lastrowid
+
+                                conn.commit()
+                                uuid_list.append(uuid)
+                            except Exception as e:
+                                logger.exception("update product exception.")
+
+                        # 拉完了
+                        if len(products) < 250:
+                            break
+                        else:
+                            since_id = products[-1].get("id", "")
+                            if not since_id:
+                                break
+        except Exception as e:
+            logger.exception("get_products e={}".format(e))
+            return False
+        finally:
+            cursor.close() if cursor else 0
+            conn.close() if conn else 0
+        return True
 
 
 
@@ -280,4 +247,4 @@ def main():
 if __name__ == '__main__':
     # main()
     # TaskProcessor().product()
-    TaskProcessor().test()
+    TaskProcessor().update_product()

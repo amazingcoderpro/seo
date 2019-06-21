@@ -40,19 +40,20 @@ class Store(models.Model):
 
 class Product(models.Model):
     """产品表"""
-    sku = models.CharField(db_index=True, max_length=255, verbose_name="产品标识符")
     domain = models.CharField(max_length=255, blank=True, null=True, verbose_name="产品domain")
     uuid = models.CharField(max_length=64, verbose_name="产品唯一标识", unique=True)
-    name = models.CharField(db_index=True, max_length=255, verbose_name="产品名称")
-    type_choices = ((0, '111'), (1, '222'), (2, '333'))
-    type = models.SmallIntegerField(choices=type_choices, default=0, verbose_name="产品类型")
-    state_choices = ((-1, '333'), (0, '111'), (1, '222'), (2, '333'))
-    state = models.SmallIntegerField(choices=state_choices, default=0, verbose_name="产品状态")
-    title = models.CharField(db_index=True, max_length=255, verbose_name="产品title")
-    description = models.TextField(blank=True, null=True, verbose_name="产品描述")
+    sku = models.CharField(max_length=255, blank=True, null=True,verbose_name="产品sku", unique=True)
+    type = models.CharField(db_index=True, blank=True, null=True,max_length=255,  verbose_name="产品类型")
+    title = models.CharField(db_index=True, blank=True, null=True, max_length=255, verbose_name="产品title")
+    price = models.CharField(db_index=True, blank=True, null=True, max_length=255, verbose_name="产品价格")
+    Variants = models.TextField(blank=True, null=True, verbose_name="产品variants")
+    meta_title = models.CharField(blank=True, null=True, max_length=255, verbose_name="产品meta_title")
+    meta_description = models.TextField(blank=True, null=True, verbose_name="产品meta_description")
     remark_title = models.TextField(blank=True, null=True, verbose_name="产品title_remark")
     remark_description = models.TextField(blank=True, null=True, verbose_name="产品description_remark")
     store = models.ForeignKey(Store, on_delete=models.DO_NOTHING)
+    state_choices = ((0, '新产品'), (1, '待发布'), (2, '已发布'))
+    state = models.SmallIntegerField(db_index=True, choices=state_choices, default=1, verbose_name="产品发布状态")
 
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")

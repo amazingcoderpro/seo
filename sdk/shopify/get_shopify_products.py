@@ -138,26 +138,50 @@ class ProductsApi:
             logger.error("get shopify all order by id is failed; info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
+    # def motify_product_meta(self, product_id, key, value):
+    #     display = {
+    #       "metafield": {
+    #         "namespace": "global",
+    #         "key": key,
+    #         "value": value,
+    #         "value_type": "string"
+    #       }
+    #     }
+    #     #shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/1831407157293/metafields.json"
+    #     shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/%s/metafields.json" %(product_id)
+    #
+    #     logger.info("url={}, display={}, shop_uri={}".format(shop_url, display, self.shop_uri))
+    #     try:
+    #         result = requests.post(shop_url, json.dumps(display), headers=self.headers)
+    #         if result.status_code == 200:
+    #             logger.info("get shopify token is successed, shopname={}".format(self.shop_uri))
+    #             print(result.text)
+    #             return {"code": 1, "msg": "", "data": json.loads(result.text).get("access_token")}
+    #         else:
+    #             logger.error("get shopify token is failed")
+    #             return {"code": 2, "msg": "oauth failed", "data": ""}
+    #     except Exception as e:
+    #         logger.error("get shopify token is exception {}".format(str(e)))
+    #         return {"code": -1, "msg": str(e), "data": ""}
 
-    def metafields(self):
-
-
+    def motify_product_meta(self, product_id, title_tag, description_tag):
+        """修改产品meta
+        链接地址：https://help.shopify.com/en/api/reference/products/product
+        接口地址：PUT /admin/api/2019-04/products/#{product_id}.json
+        """
         display = {
-          "metafield": {
-            "namespace": "global",
-            "key": "description_tag",
-            "value": "These matte black sunglasses are sure to impress.",
-            "value_type": "string"
-          }
+            "product": {
+                "id": product_id,
+                "metafields_global_title_tag": title_tag,
+                "metafields_global_description_tag": description_tag
+            }
         }
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/#1831407157293/metafields.json"
-
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/%d.json" %(product_id)
         logger.info("url={}, display={}, shop_uri={}".format(shop_url, display, self.shop_uri))
         try:
-            result = requests.post(shop_url, json.dumps(display), headers=self.headers)
+            result = requests.put(shop_url, json.dumps(display), headers=self.headers)
             if result.status_code == 200:
                 logger.info("get shopify token is successed, shopname={}".format(self.shop_uri))
-                print(result.text)
                 return {"code": 1, "msg": "", "data": json.loads(result.text).get("access_token")}
             else:
                 logger.error("get shopify token is failed")
@@ -168,7 +192,7 @@ class ProductsApi:
 
 
     def get_metafields(self):
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/#1831407157293/metafields.json"
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/1831407157293/metafields.json"
         try:
             result = requests.get(shop_url)
             if result.status_code == 200:
