@@ -108,7 +108,7 @@ venv.bak/
 cache/
 
 # pycharm
-.idea
+*.idea
 
 # test.html
 test.html
