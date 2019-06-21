@@ -13,7 +13,7 @@ class ProductMotifySerializer(serializers.ModelSerializer):
     """修改product"""
     class Meta:
         model = models.Product
-        fields = ("title", "description", "remark_title", "remark_description")
+        fields = ("remark_title", "remark_description")
         extra_kwargs = {
             # 'title': {'write_only': True, "required":True},
             # 'description': {'write_only': True, "required":True},

@@ -49,7 +49,7 @@ class ProductMotifyViews(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         models.Product.objects.filter(id__in=eval(product_list)).update(remark_title=request.data["remark_title"],remark_description=request.data["remark_description"], update_time=datetime.datetime.now(), state=-1)
-        return Response({}, status=status.HTTP_200_OK)
+        return Response([], status=status.HTTP_200_OK)
 
 
 class ProductCategoresViews(generics.ListAPIView):
