@@ -2,10 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4c1963c4-9d3c-4024-8add-acdb13449a5a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sdk/shopify/get_shopify_products.py" beforeDir="false" afterPath="$PROJECT_DIR$/sdk/shopify/get_shopify_products.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/seo_app/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/seo_app/views/product.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/views/product.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/task/task_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/task/task_processor.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -31,10 +27,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/task/task_processor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="126" selection-start-line="126" selection-end-line="126" />
+            <state relative-caret-position="204">
+              <caret line="214" selection-start-line="214" selection-end-line="214" />
               <folding>
-                <element signature="e#5102#11035#0" />
+                <element signature="e#0#65#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -43,8 +39,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sdk/shopify/get_shopify_products.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="536">
-              <caret line="187" selection-start-line="187" selection-end-line="187" />
+            <state relative-caret-position="339">
+              <caret line="72" selection-start-line="72" selection-end-line="72" />
               <folding>
                 <element signature="e#21#36#0" expanded="true" />
               </folding>
@@ -105,8 +101,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="830">
-              <caret line="125" selection-start-line="125" selection-end-line="125" />
+            <state relative-caret-position="114">
+              <caret line="34" column="7" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="7" />
             </state>
           </provider>
         </entry>
@@ -154,7 +150,6 @@
         <option value="$PROJECT_DIR$/seo_app/utils/random_code.py" />
         <option value="$PROJECT_DIR$/config.py" />
         <option value="$PROJECT_DIR$/seo/__init__.py" />
-        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/seo_app/serializers/personal_center.py" />
         <option value="$PROJECT_DIR$/seo_app/utils/send_sms_agent.py" />
         <option value="$PROJECT_DIR$/seo_app/views/personal_center.py" />
@@ -168,6 +163,7 @@
         <option value="$PROJECT_DIR$/seo_app/views/product.py" />
         <option value="$PROJECT_DIR$/seo_app/models.py" />
         <option value="$PROJECT_DIR$/sdk/shopify/get_shopify_products.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/task/task_processor.py" />
       </list>
     </option>
@@ -308,23 +304,24 @@
       <workItem from="1560928275239" duration="745000" />
       <workItem from="1560929330438" duration="32563000" />
       <workItem from="1561080355471" duration="4623000" />
-      <workItem from="1561089308608" duration="10683000" />
+      <workItem from="1561089308608" duration="12110000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="48614000" />
+    <option name="totallyTimeSpent" value="50041000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="-260" width="1920" height="1080" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.19808307" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15974441" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.45491388" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.32624114" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.52279633" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -354,8 +351,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/task/task_processor.py</url>
-          <line>146</line>
-          <option name="timeStamp" value="45" />
+          <line>213</line>
+          <option name="timeStamp" value="48" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -367,7 +364,7 @@
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/seo$task_processor.coverage" NAME="task_processor Coverage Results" MODIFIED="1561107971052" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task" />
+    <SUITE FILE_PATH="coverage/seo$task_processor.coverage" NAME="task_processor Coverage Results" MODIFIED="1561109455284" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/task" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="watch">
@@ -593,13 +590,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="830">
-          <caret line="125" selection-start-line="125" selection-end-line="125" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/seo_app/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="610">
@@ -610,10 +600,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="34" column="7" selection-start-line="34" selection-start-column="7" selection-end-line="34" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sdk/shopify/get_shopify_products.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="536">
-          <caret line="187" selection-start-line="187" selection-end-line="187" />
+        <state relative-caret-position="339">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
           <folding>
             <element signature="e#21#36#0" expanded="true" />
           </folding>
@@ -622,10 +619,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/task/task_processor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
-          <caret line="126" selection-start-line="126" selection-end-line="126" />
+        <state relative-caret-position="204">
+          <caret line="214" selection-start-line="214" selection-end-line="214" />
           <folding>
-            <element signature="e#5102#11035#0" />
+            <element signature="e#0#65#0" expanded="true" />
           </folding>
         </state>
       </provider>

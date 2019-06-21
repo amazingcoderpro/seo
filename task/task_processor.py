@@ -200,6 +200,7 @@ class TaskProcessor:
                             variants_price_str = ""
                             variants_color_str = " Color"
                             variants_size_str = " Size"
+                            variants_str = ""
                             if variants:
                                 for item in variants:
                                     variants_price_str += " " + item["price"]
@@ -209,8 +210,8 @@ class TaskProcessor:
                                 variants_tmp_list = tmp_str.split(" ")
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
-                                variants_str = " ".join(variants_list) + " Sku " + sku
-                            logger.info("产品信息",sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0)
+                                variants_str = " ".join(variants_list) + " Sku " + str(sku)
+                            logger.info("update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid))
                             try:
                                 if uuid in exist_products_dict.keys():
                                     pro_id = exist_products_dict[uuid]
@@ -255,7 +256,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
     # TaskProcessor().product()
-    # TaskProcessor().update_product()
+    TaskProcessor().update_product()
     #TaskProcessor().motify_product_meta()
