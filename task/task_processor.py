@@ -118,22 +118,44 @@ class TaskProcessor:
             if not cursor:
                 return False
 
-            # cursor.execute('''select id, name, uri, token, user_id from `store`''')
-            # store = cursor.fetchall()
-            # if not store:
-            #     logger.info("there have no new store to analyze.")
-            #     return True
-            cursor.execute('''select id, name, uri, token, user_id from `product` where state=1''')
-            product = cursor.fetchall()
-            if not product:
+            cursor.execute('''select store.id,store.token,store.uri from store left join user on store.user_id = user.id where user.is_active = 1''')
+            stores = cursor.fetchall()
+            if not stores:
                 logger.info("there have no new store to analyze.")
                 return True
-
-            collections = ProductsApi(store[0][3], store[0][2]).motify_product_meta(1831407157293, "Brand new title",
-                                                                                    "Brand new description")
-            print(collections)
+            # store_list = [item[0] for item in store]
+            for store in stores:
+                cursor.execute('''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',(store[0],))
+                products = cursor.fetchall()
+                if not products:
+                    logger.info("there have no new store to analyze.")
+                    return True
+                for item in products:
+                    id, domain, price, uuid, type, title, remark_title, remark_description, variants = item
+                    url = domain.split("//")[1].split(".")[0] + ".com"
+                    remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
+                                   "%Product Price%": price, "%Domain%": url}
+                    for row in remark_dict:
+                        remark_title = remark_title.replace(row,remark_dict[row])
+                        remark_description = remark_description.replace(row,remark_dict[row])
+                result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
+                if result["code"] == 1:
+                    cursor.execute(
+                        '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
+                        (remark_title, remark_description, id))
+                else:
+                    cursor.execute(
+                        '''update `product` set error_text=%s, state=3 where id=%s''',
+                        (result["data"],id))
+                    conn.commit()
         except Exception as e:
-            pass
+            logger.exception("motify_product_meta e={}".format(e))
+            return False
+        finally:
+            cursor.close() if cursor else 0
+            conn.close() if conn else 0
+        return True
+
 
     def update_product(self, url=""):
         """
@@ -188,31 +210,46 @@ class TaskProcessor:
                         products = ret["data"].get("products", [])
                         logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,len(products)))
                         for pro in products:
-                            print(products)
                             uuid = str(pro.get("id", ""))
                             if uuid in uuid_list:
                                 continue
-
+                            sku = pro.get("handle", "")
+                            if "-" in sku:
+                                continue
                             title = pro.get("title", "")
-                            domain = "https://{}/products/{}".format(store_uri, pro.get("handle", ""))
+                            domain = "https://{}/products/{}".format(store_uri, sku)
                             type = pro.get("product_type", "")
                             variants = pro.get("variants", [])
-                            sku = float(variants[0].get("sku", "0")) if variants else ""
+                            sku = pro.get("handle", "")
                             price = variants[0].get("price", "") if variants else 0
                             time_now = datetime.datetime.now()
-
+                            variants_price_str = ""
+                            variants_color_str = " Color"
+                            variants_size_str = " Size"
+                            if variants:
+                                for item in variants:
+                                    variants_price_str += " " + item["price"]
+                                    variants_color_str += " " + item["option1"]
+                                    variants_size_str += " " + item["option2"] if item["option2"] else ""
+                                tmp_str = variants_price_str + variants_color_str + variants_size_str
+                                variants_tmp_list = tmp_str.split(" ")
+                                variants_list = list(set(variants_tmp_list))
+                                variants_list.sort(key=variants_tmp_list.index)
+                                variants_str = " ".join(variants_list) + " Sku " + sku
+                            logger.info("产品信息",sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0)
                             try:
                                 if uuid in exist_products_dict.keys():
                                     pro_id = exist_products_dict[uuid]
                                     logger.info(
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
+
                                     cursor.execute(
-                                        '''update `product` set sku=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
-                                        (sku, price, type, domain, title, time_now, pro_id))
+                                        '''update `product` set sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        (sku, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
-                                        "insert into `product` (`sku`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (sku, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
+                                        "insert into `product` (`sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        (sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
 
                                 conn.commit()
@@ -247,4 +284,5 @@ def main():
 if __name__ == '__main__':
     # main()
     # TaskProcessor().product()
-    TaskProcessor().update_product()
+    # TaskProcessor().update_product()
+    TaskProcessor().motify_product_meta()

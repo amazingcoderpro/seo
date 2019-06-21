@@ -176,7 +176,7 @@ class ProductsApi:
                 "metafields_global_description_tag": description_tag
             }
         }
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/%d.json" %(product_id)
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/%s.json" %(product_id)
         logger.info("url={}, display={}, shop_uri={}".format(shop_url, display, self.shop_uri))
         try:
             result = requests.put(shop_url, json.dumps(display), headers=self.headers)
@@ -185,7 +185,7 @@ class ProductsApi:
                 return {"code": 1, "msg": "", "data": json.loads(result.text).get("access_token")}
             else:
                 logger.error("get shopify token is failed")
-                return {"code": 2, "msg": "oauth failed", "data": ""}
+                return {"code": 2, "msg": "oauth failed", "data": json.loads(result.text).get("errors")}
         except Exception as e:
             logger.error("get shopify token is exception {}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
