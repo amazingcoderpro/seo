@@ -83,7 +83,7 @@ DATABASES = {
     'NAME':'seo',
     'USER': 'seo',
     'PASSWORD': 'seo@orderplus.com',
-    'HOST': '47.112.113.252',
+    'HOST': '47.244.107.240',
     'PORT': '3306',
     'OPTIONS': {"init_command": "SET foreign_key_checks = 0;",}
     }

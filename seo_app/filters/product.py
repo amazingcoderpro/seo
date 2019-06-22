@@ -6,7 +6,7 @@ class ProductFilter(BaseFilterBackend):
     """product列表过滤"""
 
     filter_keys = {
-        "name": "name__icontains",
+        "title": "title__icontains",
     }
 
     def filter_queryset(self, request, queryset, view):
