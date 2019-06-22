@@ -13,7 +13,6 @@ class User(AbstractUser):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        managed = False
         db_table = 'user'
         ordering = ["-id"]
 
@@ -34,7 +33,6 @@ class Store(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        managed = False
         db_table = 'store'
         ordering = ["-id"]
 
@@ -54,6 +52,7 @@ class Product(models.Model):
     remark_description = models.TextField(blank=True, null=True, verbose_name="产品description_remark")
     store = models.ForeignKey(Store, on_delete=models.DO_NOTHING)
     state_choices = ((0, '新产品'), (1, '待发布'), (2, '已发布'), (3, '发布失败'))
+    thumbnail = models.TextField(verbose_name="缩略图", default=None, blank=True, null=True)
     state = models.SmallIntegerField(db_index=True, choices=state_choices, default=1, verbose_name="产品发布状态")
     error_text = models.TextField(blank=True, null=True, verbose_name="发布错误信息")
 
@@ -61,7 +60,6 @@ class Product(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        managed = False
         unique_together = ("uuid", "store")
         db_table = 'product'
         ordering = ["-id"]

@@ -211,6 +211,17 @@ class TaskProcessor:
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
                                 variants_str = " ".join(variants_list) + " Sku " + str(sku)
+
+                            img_obj = pro.get("image", {})
+                            if img_obj:
+                                pro_image = img_obj.get("src", "")
+                            elif pro.get("images", []):
+                                pro_image = pro.get("images")[0]
+                            else:
+                                pro_image = ""
+                            thumbnail = self.image_2_base64(pro_image)
+
+
                             logger.info("update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid))
                             try:
                                 if uuid in exist_products_dict.keys():
@@ -219,12 +230,12 @@ class TaskProcessor:
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
 
                                     cursor.execute(
-                                        '''update `product` set sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
-                                        (sku, variants_str, price, type, domain, title, time_now, pro_id))
+                                        '''update `product` set thumbnail=%s sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
-                                        "insert into `product` (`sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
+                                        "insert into `product` (`thumbnail`, `sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
 
                                 conn.commit()
@@ -246,6 +257,31 @@ class TaskProcessor:
             cursor.close() if cursor else 0
             conn.close() if conn else 0
         return True
+
+    def image_2_base64(self, image_src, is_thumb=True, size=(70, 70), format='png'):
+        try:
+            base64_str = ""
+            if not image_src:
+                return base64_str
+            if not os.path.exists(image_src):
+                response = requests.get(image_src)
+                image = Image.open(BytesIO(response.content))
+            else:
+                image = Image.open(image_src)
+
+            if is_thumb:
+                image.thumbnail(size)
+
+            output_buffer = BytesIO()
+            if "jp" in image_src[-4:]:
+                format = "JPEG"
+            image.save(output_buffer, format=format)
+            byte_data = output_buffer.getvalue()
+            base64_str = base64.b64encode(byte_data)
+            base64_str = base64_str.decode("utf-8")
+        except Exception as e:
+            logger.error("image_2_base64 e={}".format(e))
+        return base64_str
 
 
 def main():
