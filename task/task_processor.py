@@ -50,14 +50,14 @@ class TaskProcessor:
         self.product_job = None
         self.update_product_job = None
 
-    def start_all(self, product_collections_interval=3600,product_interval=3600):
+    def start_all(self, product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600):
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
         self.motify_product_collections_meta()
         self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_interval, max_instances=50)
         # 修改产品meta
         self.motify_product_meta()
-        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_interval, max_instances=50)
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
         # 更新产品
         self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
@@ -150,16 +150,19 @@ class TaskProcessor:
                 cursor.execute("""select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
-            # 取中已经存在的所有products, 只需更新即可
-            cursor.execute('''select id, uuid from `product` where id>=0''')
-            exist_products = cursor.fetchall()
-            exist_products_dict = {}
-            for exp in exist_products:
-                exist_products_dict[exp[1]] = exp[0]
+
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
                 store_id, store_uri, store_token = store
+
+                # 取中已经存在的所有products, 只需更新即可
+                cursor.execute('''select id, uuid from `product` where store_id=%s''',(store_id))
+                exist_products = cursor.fetchall()
+                exist_products_dict = {}
+                for exp in exist_products:
+                    exist_products_dict[exp[1]] = exp[0]
+
                 if not all([store_uri, store_token]):
                     logger.warning("store url or token is invalid, store id={}".format(store_id))
                     continue
@@ -173,9 +176,9 @@ class TaskProcessor:
 
                 since_id = ""
                 max_fetch = 50  # 不管拉没拉完，最多拉250＊50个产品
+                uuid_list = []
                 while max_fetch > 0:
                     max_fetch -= 1
-                    uuid_list = []
                     ret = papi.get_all_products(limit=250, since_id=since_id)
                     if ret["code"] != 1:
                         logger.warning("get shop products failed. ret={}".format(ret))
@@ -230,7 +233,7 @@ class TaskProcessor:
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
 
                                     cursor.execute(
-                                        '''update `product` set thumbnail=%s sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        '''update `product` set thumbnail=%s, sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
                                         (thumbnail, sku, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
@@ -286,7 +289,7 @@ class TaskProcessor:
 
 def main():
     tsp = TaskProcessor()
-    tsp.start_all(product_collections_interval=3600, product_interval=3600)
+    tsp.start_all(product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600)
     while 1:
         time.sleep(1)
 
