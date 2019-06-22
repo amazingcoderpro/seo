@@ -31,11 +31,12 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-seo_app/migrations/*
-*.idea/
+.idea
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+.idea/workspace.xml
+
 
 # Unit test / coverage reports
 htmlcov/

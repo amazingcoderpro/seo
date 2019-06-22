@@ -15,7 +15,7 @@ from config import logger
 
 
 class DBUtil:
-    def __init__(self, host="47.112.113.252", port=3306, db="seo", user="seo", password="seo@orderplus.com"):
+    def __init__(self, host="47.244.107.240", port=3306, db="seo", user="seo", password="seo@orderplus.com"):
         self.conn_pool = {}
         self.host = host
         self.port = port
@@ -50,14 +50,14 @@ class TaskProcessor:
         self.product_job = None
         self.update_product_job = None
 
-    def start_all(self, product_collections_interval=3600,product_interval=3600):
+    def start_all(self, product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600):
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
         self.motify_product_collections_meta()
         self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_interval, max_instances=50)
         # 修改产品meta
         self.motify_product_meta()
-        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_interval, max_instances=50)
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
         # 更新产品
         self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
@@ -215,16 +215,19 @@ class TaskProcessor:
                 cursor.execute("""select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
-            # 取中已经存在的所有products, 只需更新即可
-            cursor.execute('''select id, uuid from `product` where id>=0''')
-            exist_products = cursor.fetchall()
-            exist_products_dict = {}
-            for exp in exist_products:
-                exist_products_dict[exp[1]] = exp[0]
+
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
                 store_id, store_uri, store_token = store
+
+                # 取中已经存在的所有products, 只需更新即可
+                cursor.execute('''select id, uuid from `product` where store_id=%s''',(store_id))
+                exist_products = cursor.fetchall()
+                exist_products_dict = {}
+                for exp in exist_products:
+                    exist_products_dict[exp[1]] = exp[0]
+
                 if not all([store_uri, store_token]):
                     logger.warning("store url or token is invalid, store id={}".format(store_id))
                     continue
@@ -238,9 +241,9 @@ class TaskProcessor:
 
                 since_id = ""
                 max_fetch = 50  # 不管拉没拉完，最多拉250＊50个产品
+                uuid_list = []
                 while max_fetch > 0:
                     max_fetch -= 1
-                    uuid_list = []
                     ret = papi.get_all_products(limit=250, since_id=since_id)
                     if ret["code"] != 1:
                         logger.warning("get shop products failed. ret={}".format(ret))
@@ -276,6 +279,17 @@ class TaskProcessor:
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
                                 variants_str = " ".join(variants_list) + " Sku " + str(sku)
+
+                            img_obj = pro.get("image", {})
+                            if img_obj:
+                                pro_image = img_obj.get("src", "")
+                            elif pro.get("images", []):
+                                pro_image = pro.get("images")[0]
+                            else:
+                                pro_image = ""
+                            thumbnail = self.image_2_base64(pro_image)
+
+
                             logger.info("update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid))
                             try:
                                 if uuid in exist_products_dict.keys():
@@ -284,12 +298,12 @@ class TaskProcessor:
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
 
                                     cursor.execute(
-                                        '''update `product` set sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
-                                        (sku, variants_str, price, type, domain, title, time_now, pro_id))
+                                        '''update `product` set thumbnail=%s, sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
-                                        "insert into `product` (`sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
+                                        "insert into `product` (`thumbnail`, `sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
 
                                 conn.commit()
@@ -312,10 +326,35 @@ class TaskProcessor:
             conn.close() if conn else 0
         return True
 
+    def image_2_base64(self, image_src, is_thumb=True, size=(70, 70), format='png'):
+        try:
+            base64_str = ""
+            if not image_src:
+                return base64_str
+            if not os.path.exists(image_src):
+                response = requests.get(image_src)
+                image = Image.open(BytesIO(response.content))
+            else:
+                image = Image.open(image_src)
+
+            if is_thumb:
+                image.thumbnail(size)
+
+            output_buffer = BytesIO()
+            if "jp" in image_src[-4:]:
+                format = "JPEG"
+            image.save(output_buffer, format=format)
+            byte_data = output_buffer.getvalue()
+            base64_str = base64.b64encode(byte_data)
+            base64_str = base64_str.decode("utf-8")
+        except Exception as e:
+            logger.error("image_2_base64 e={}".format(e))
+        return base64_str
+
 
 def main():
     tsp = TaskProcessor()
-    tsp.start_all(product_collections_interval=3600, product_interval=3600)
+    tsp.start_all(product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600)
     while 1:
         time.sleep(1)
 
