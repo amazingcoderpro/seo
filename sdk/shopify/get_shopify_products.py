@@ -23,19 +23,23 @@ class ProductsApi:
         self.version_url = "/admin/api/2019-04/"
         self.headers = {'Content-Type': 'application/json'}
 
-    def get_custom_collections(self):
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json?ids=126245568576"
-        # shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json"
+    def get_collections(self):
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json"
+        shop_url2 = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}smart_collections.json"
         try:
             result = requests.get(shop_url)
-            if result.status_code == 200:
-                logger.info("get shopify info is success")
-                return {"code": 1, "msg": "", "data": json.loads(result.text)}
+            result2 = requests.get(shop_url2)
+
+            if result.status_code == 200 and result2.status_code == 200:
+                logger.info("get shopify all collections info is success")
+                res_dict = json.loads(result.text)
+                res_dict.update(json.loads(result2.text))
+                return {"code": 1, "msg": "", "data": res_dict}
             else:
-                logger.info("get shopify info is failed")
+                logger.info("get shopify all collections info is failed")
                 return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
         except Exception as e:
-            logger.error("get shopify info is failed info={}".format(str(e)))
+            logger.error("get shopify all collections info is failed info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
     def get_shop_info(self):
@@ -205,6 +209,47 @@ class ProductsApi:
             logger.error("get shopify info is failed info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
+    def update_custom_collection_by_id(self, collection_id, title, description):
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/custom_collections/{collection_id}.json"
+        params = {
+            "custom_collection": {
+                "id": collection_id,
+                "body_html": description,
+                "title": title,
+            }
+        }
+        try:
+            result = requests.put(shop_url, json.dumps(params), headers=self.headers)
+            if result.status_code == 200:
+                logger.info("update shopify a collection({}) info is success".format(collection_id))
+                return {"code": 1, "msg": "", "data": json.loads(result.text)}
+            else:
+                logger.info("update shopify a collection({}) info is failed".format(collection_id))
+                return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
+        except Exception as e:
+            logger.error("update shopify a collection({}) info is failed info={}".format(collection_id, str(e)))
+            return {"code": -1, "msg": str(e), "data": ""}
+
+    def update_smart_collection_by_id(self, collection_id, title, description):
+        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/smart_collections/{collection_id}.json"
+        params = {
+            "smart_collection": {
+                "id": collection_id,
+                "body_html": description,
+                "title": title
+            }
+        }
+        try:
+            result = requests.put(shop_url, json.dumps(params), headers=self.headers)
+            if result.status_code == 200:
+                logger.info("update shopify a collection({}) info is success".format(collection_id))
+                return {"code": 1, "msg": "", "data": json.loads(result.text)}
+            else:
+                logger.info("update shopify a collection({}) info is failed".format(collection_id))
+                return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
+        except Exception as e:
+            logger.error("update shopify a collection({}) info is failed info={}".format(collection_id, str(e)))
+            return {"code": -1, "msg": str(e), "data": ""}
 
 if __name__ == '__main__':
     client_id = "7fced15ff9d1a461f10979c3eae2eca8"
@@ -215,7 +260,9 @@ if __name__ == '__main__':
     id = "3583116148816"
     shop_uri = "tiptopfree.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
-    products_api.get_custom_collections()
+    # print(products_api.get_custom_collections())
+    # print(products_api.update_smart_collection_by_id(81154736173))
+    # print(products_api.update_custom_collection_by_id(80778231853))
     # products_api.get_all_products(limit="250", since_id="1833170796589")
     # products_api.get_order(create_start_time="2019-05-22T0:0:0-04:00", create_end_time="2019-05-28T0:0:0-04:00", key_word="google", financial_status="paid")
     # products_api.get_shop_info()
