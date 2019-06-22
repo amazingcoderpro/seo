@@ -170,7 +170,7 @@ class TaskProcessor:
                 res = papi.get_all_collections()
                 if res["code"] == 1:
                     # 删除当前店铺所有类目信息
-                    cursor.execute("""delete * from collection where store_id = %s""", (store_id,))
+                    cursor.execute("""delete from collection where store_id = %s""", (store_id,))
                     # 插入新的数据
                     for collection in res["data"]:
                         uuid, meta_title, address, meta_description = collection.values()
@@ -362,5 +362,6 @@ def main():
 if __name__ == '__main__':
     #main()
     # TaskProcessor().product()
-    TaskProcessor().update_product()
+    # TaskProcessor().update_product()
+    TaskProcessor().update_collection()
     #TaskProcessor().motify_product_meta()
