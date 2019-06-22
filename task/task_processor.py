@@ -15,7 +15,7 @@ from config import logger
 
 
 class DBUtil:
-    def __init__(self, host="47.112.113.252", port=3306, db="seo", user="seo", password="seo@orderplus.com"):
+    def __init__(self, host="47.244.107.240", port=3306, db="seo", user="seo", password="seo@orderplus.com"):
         self.conn_pool = {}
         self.host = host
         self.port = port

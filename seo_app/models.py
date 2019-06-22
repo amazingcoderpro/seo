@@ -13,7 +13,7 @@ class User(AbstractUser):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        # managed = False
+        managed = False
         db_table = 'user'
         ordering = ["-id"]
 
@@ -34,6 +34,7 @@ class Store(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
+        managed = False
         db_table = 'store'
         ordering = ["-id"]
 
@@ -60,7 +61,7 @@ class Product(models.Model):
     update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
 
     class Meta:
-        # managed = False
+        managed = False
         unique_together = ("uuid", "store")
         db_table = 'product'
         ordering = ["-id"]
