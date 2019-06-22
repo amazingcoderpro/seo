@@ -3,6 +3,7 @@ import requests
 from config import logger
 import json
 from config import SHOPIFY_CONFIG
+import urllib.parse
 
 
 class ProductsApi:
@@ -23,7 +24,7 @@ class ProductsApi:
         self.version_url = "/admin/api/2019-04/"
         self.headers = {'Content-Type': 'application/json'}
 
-    def get_collections(self):
+    def get_all_collections(self):
         shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json"
         shop_url2 = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}smart_collections.json"
         try:
@@ -34,13 +35,27 @@ class ProductsApi:
                 logger.info("get shopify all collections info is success")
                 res_dict = json.loads(result.text)
                 res_dict.update(json.loads(result2.text))
-                return {"code": 1, "msg": "", "data": res_dict}
+                return {"code": 1, "msg": "", "data": self.parse_collections(res_dict)}
             else:
                 logger.info("get shopify all collections info is failed")
                 return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
         except Exception as e:
             logger.error("get shopify all collections info is failed info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
+
+    @classmethod
+    def parse_collections(cls, data):
+        all_collections = []
+        for col in data["custom_collections"] + data["smart_collections"]:
+            all_collections.append(
+                {
+                    "uuid": col.get("id", ""),
+                    "meta_title": col.get("title", ""),
+                    "address": "/collections/" + col.get("title", "").lower().replace("'", "").replace(" ", "-"),
+                    "meta_description": col.get("body_html", ""),
+                }
+            )
+        return all_collections
 
     def get_shop_info(self):
         """
@@ -194,7 +209,6 @@ class ProductsApi:
             logger.error("get shopify token is exception {}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
-
     def get_metafields(self):
         shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/1831407157293/metafields.json"
         try:
@@ -260,7 +274,7 @@ if __name__ == '__main__':
     id = "3583116148816"
     shop_uri = "tiptopfree.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
-    # print(products_api.get_custom_collections())
+    print(products_api.get_collections())
     # print(products_api.update_smart_collection_by_id(81154736173))
     # print(products_api.update_custom_collection_by_id(80778231853))
     # products_api.get_all_products(limit="250", since_id="1833170796589")

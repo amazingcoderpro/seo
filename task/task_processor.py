@@ -131,6 +131,71 @@ class TaskProcessor:
             conn.close() if conn else 0
         return True
 
+    def update_collection(self, url=""):
+        """
+        获取所有店铺的所有类目，并保存至数据库
+        :param url: 店铺url
+        :return:
+        """
+        logger.info("update_collection is cheking...")
+        try:
+            conn = DBUtil().get_instance()
+            cursor = conn.cursor() if conn else None
+            if not cursor:
+                return False
+
+            if url:
+                cursor.execute(
+                    '''select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1 nad url=%s''',
+                    (url,))
+            else:
+                cursor.execute(
+                    """select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+            stores = cursor.fetchall()
+
+            # 遍历数据库中的所有store，更新产品信息
+            for store in stores:
+                # 删除当前店铺下所有的类目，拉最新类目信息插入
+                store_id, store_uri, store_token = store
+                if not all([store_uri, store_token]):
+                    logger.warning("store url or token is invalid, store id={}".format(store_id))
+                    continue
+
+                if "shopify" not in store_uri:
+                    logger.error("store uri={}, not illegal")
+                    continue
+
+                # 更新产品信息
+                papi = ProductsApi(store_token, store_uri)
+                res = papi.get_all_collections()
+                if res["code"] == 1:
+                    # 删除当前店铺所有类目信息
+                    cursor.execute("""delete * from collection where store_id = %s""", (store_id,))
+                    # 插入新的数据
+                    for collection in res["data"]:
+                        uuid, meta_title, address, meta_description = collection.values()
+                        now_time = datetime.datetime.now()
+                        logger.info(
+                            "update collection data: {} {} {} {}".format(uuid, address, meta_title, meta_description))
+                        try:
+                            cursor.execute(
+                                '''insert into `collection` set uuid=%s, address=%s, meta_title=%s, meta_description=%s, store_id=%s, create_time=%s, update_time=%s''',
+                                (uuid, address, meta_title, meta_description, store_id, now_time, now_time))
+                            conn.commit()
+                        except Exception as e:
+                            logger.exception("update product exception.")
+                else:
+                    logger.warning("get shop collections failed. res={}".format(res))
+                    break
+
+        except Exception as e:
+            logger.exception("update_collection e={}".format(e))
+            return False
+        finally:
+            cursor.close() if cursor else 0
+            conn.close() if conn else 0
+        return True
+
     def update_product(self, url=""):
         """
          获取所有店铺的所有products, 并保存至数据库
