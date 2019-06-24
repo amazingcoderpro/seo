@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
+<<<<<<< HEAD
+    <list default="true" id="faf9d28a-4587-47c2-9202-0ceb262f469e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+=======
     <list default="true" id="8c078efd-c9f6-4d1a-a3eb-7550d091c723" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sdk/shopify/get_shopify_products.py" beforeDir="false" afterPath="$PROJECT_DIR$/sdk/shopify/get_shopify_products.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seo_app/views/collection.py" beforeDir="false" afterPath="$PROJECT_DIR$/seo_app/views/collection.py" afterDir="false" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +21,16 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/task/task_processor.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+            <state relative-caret-position="346">
+              <caret line="115" column="74" selection-start-line="115" selection-start-column="74" selection-end-line="115" selection-end-column="74" />
+              <folding>
+                <element signature="e#0#65#0" expanded="true" />
+              </folding>
+=======
             <state relative-caret-position="258">
               <caret line="169" column="17" selection-start-line="169" selection-start-column="17" selection-end-line="169" selection-end-column="17" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
             </state>
           </provider>
         </entry>
@@ -37,8 +50,13 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/seo_app/models.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+            <state relative-caret-position="351">
+              <caret line="202" column="42" selection-start-line="202" selection-end-line="203" />
+=======
             <state relative-caret-position="374">
               <caret line="72" column="20" selection-start-line="72" selection-start-column="4" selection-end-line="72" selection-end-column="20" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
               <folding>
                 <element signature="e#0#16#0" expanded="true" />
               </folding>
@@ -59,11 +77,19 @@
           </provider>
         </entry>
       </file>
+<<<<<<< HEAD
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/seo_app/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="234">
+              <caret line="17" column="10" lean-forward="true" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="33" />
+=======
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/demo1.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="375">
               <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
                 <element signature="e#1194#1548#0" />
@@ -157,10 +183,18 @@
       </list>
     </option>
   </component>
+<<<<<<< HEAD
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="x" value="-1680" />
+    <option name="y" value="-237" />
+    <option name="width" value="1440" />
+    <option name="height" value="877" />
+=======
   <component name="ProjectFrameBounds">
     <option name="x" value="607" />
     <option name="width" value="1189" />
     <option name="height" value="1041" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -353,11 +387,21 @@
     </task>
     <servers />
   </component>
+<<<<<<< HEAD
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="5786000" />
+  </component>
+=======
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
+<<<<<<< HEAD
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.1368477" />
+=======
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.07942431" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info id="DB Browser" order="3" />
@@ -372,9 +416,14 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
+<<<<<<< HEAD
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.37386018" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.32928064" />
+=======
       <window_info anchor="bottom" id="Terminal" order="11" weight="0.34201586" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.2412231" />
       <window_info anchor="bottom" id="DB Execution Console" order="13" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -389,6 +438,10 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/task/task_processor.py</url>
+<<<<<<< HEAD
+          <line>118</line>
+          <option name="timeStamp" value="56" />
+=======
           <line>365</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
@@ -396,6 +449,7 @@
           <url>file://$PROJECT_DIR$/demo1.py</url>
           <line>25</line>
           <option name="timeStamp" value="8" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -474,6 +528,8 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
+=======
     <entry file="file://$PROJECT_DIR$/seo_app/filters/collection.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="175">
@@ -484,6 +540,7 @@
         </state>
       </provider>
     </entry>
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
     <entry file="file://$PROJECT_DIR$/seo_app/serializers/product.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="275">
@@ -553,18 +610,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/task/task_processor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="346">
+          <caret line="115" column="74" selection-start-line="115" selection-start-column="74" selection-end-line="115" selection-end-column="74" />
+          <folding>
+            <element signature="e#0#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sdk/shopify/get_shopify_products.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="351">
+          <caret line="202" column="42" selection-start-line="202" selection-end-line="203" />
+=======
         <state relative-caret-position="-375">
           <caret line="228" column="35" lean-forward="true" selection-start-line="228" selection-start-column="35" selection-end-line="228" selection-end-column="35" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
           <folding>
             <element signature="e#21#36#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/task/task_processor.py">
+    <entry file="file://$PROJECT_DIR$/seo_app/urls.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
+        <state relative-caret-position="234">
+          <caret line="17" column="10" lean-forward="true" selection-start-line="17" selection-start-column="10" selection-end-line="17" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+=======
         <state relative-caret-position="258">
           <caret line="169" column="17" selection-start-line="169" selection-start-column="17" selection-end-line="169" selection-end-column="17" />
         </state>
@@ -586,6 +664,7 @@
           <caret line="72" lean-forward="true" selection-start-line="72" selection-end-line="72" />
           <folding>
             <element signature="e#70#85#0" expanded="true" />
+>>>>>>> dd29538a808212a4416737600eec8538d061671b
           </folding>
         </state>
       </provider>
