@@ -53,15 +53,15 @@ class TaskProcessor:
     def start_all(self, product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600):
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
-        self.motify_product_collections_meta()
-        self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_interval, max_instances=50)
+        # self.motify_product_collections_meta()
+        #self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
         self.motify_product_meta()
-        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=1)
         # 更新产品
-        self.update_product()
+        # self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
-                                                     max_instances=50)
+                                                     max_instances=1)
 
     def motify_product_collections_meta(self):
         pass
@@ -103,25 +103,27 @@ class TaskProcessor:
                 cursor.execute('''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',(store[0],))
                 products = cursor.fetchall()
                 if not products:
-                    logger.info("there have no new store to analyze.")
-                    return True
+                    continue
                 for item in products:
                     id, domain, price, uuid, type, title, remark_title, remark_description, variants = item
+                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id,store[0]))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
                                    "%Product Price%": price, "%Domain%": url}
                     for row in remark_dict:
                         remark_title = remark_title.replace(row,remark_dict[row])
                         remark_description = remark_description.replace(row,remark_dict[row])
-                result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
-                if result["code"] == 1:
-                    cursor.execute(
-                        '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
-                        (remark_title, remark_description, id))
-                else:
-                    cursor.execute(
-                        '''update `product` set error_text=%s, state=3 where id=%s''',
-                        (result["data"],id))
+                    result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
+                    if result["code"] == 1:
+                        logger.error("successful motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        cursor.execute(
+                            '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
+                            (remark_title, remark_description, id))
+                    else:
+                        logger.error("faild motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        cursor.execute(
+                            '''update `product` set error_text=%s, state=3 where id=%s''',
+                            (result["data"],id))
                     conn.commit()
         except Exception as e:
             logger.exception("motify_product_meta e={}".format(e))
@@ -360,8 +362,8 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
+    main()
     # TaskProcessor().product()
     # TaskProcessor().update_product()
-    TaskProcessor().update_collection()
+    # TaskProcessor().update_collection()
     #TaskProcessor().motify_product_meta()
