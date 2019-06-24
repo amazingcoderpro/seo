@@ -9,10 +9,11 @@ from seo_app import models
 
 class CollectionSerializer(serializers.ModelSerializer):
     """collection"""
+    domain = serializers.CharField(source="store.url", read_only=True)
 
     class Meta:
         model = models.Collection
-        fields = "__all__"
+        fields = ("id", "uuid", "meta_title", "meta_description", "remark_title", "remark_description", "domain")
 
 
 class CollectionMotifySerializer(serializers.ModelSerializer):

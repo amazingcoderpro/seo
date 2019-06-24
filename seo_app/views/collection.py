@@ -58,14 +58,14 @@ class CollectionMotifyViews(generics.CreateAPIView):
             collection_obj = models.Collection.objects.filter(pk=collection)
             title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
             description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_description).replace("%Domain%", domain)
-            res = api_obj.update_collection_by_id(collection_obj.first().uuid, title, description)
-            if res["code"] == 1:
-                collection_obj.update(remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
+            # res = api_obj.update_collection_by_id(collection_obj.first().uuid, title, description)
+            # if res["code"] == 1:
+            collection_obj.update(remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
                                       update_time=datetime.datetime.now())
-                logger.info("update collection({}) success.".format(collection_obj.first().meta_title))
-            else:
-                logger.info("update collection({}) failed. error is {}".format(collection_obj.first().meta_title, res["msg"]))
-                return Response({"detail": res["msg"]}, status=status.HTTP_400_BAD_REQUEST)
+            logger.info("update collection({}) success.".format(collection_obj.first().meta_title))
+            # else:
+            #     logger.info("update collection({}) failed. error is {}".format(collection_obj.first().meta_title, res["msg"]))
+            #     return Response({"detail": res["msg"]}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "update all collections success."}, status=status.HTTP_200_OK)
 
 

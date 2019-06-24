@@ -263,8 +263,11 @@ if __name__ == '__main__':
     id = "3583116148816"
     shop_uri = "tiptopfree.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
-    # print(products_api.get_collections())
-    print(products_api.update_smart_collection_by_id(80778231853, "Hot Sale", '<div style="text-align: center;"><strong>🎁 Over $69 Get Extra 5% OFF (CODE: PUSH5)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $109 Get Extra 10% OFF (CODE: PUSH10)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $139 Get Extra 15% OFF (CODE: PUSH15)</strong></div>'))
+    # print(products_api.get_all_collections())
+    # a = [80778231853,80778199085,80776429613,80776855597,80778330157,80776462381,80776495149,80776593453,80778723373,80778395693,80776888365]
+    for i in [81154736173,80777314349,80776921133,80778002477,80778592301,80776986669,80777216045,80777674797,80777838637,80777379885,80777281581,80777510957,80777412653,80777609261,80778526765,80777478189,80777183277,80777445421,80777740333,80777805869,80778035245,80777052205,80776953901,80777347117,80777969709,80778756141]:
+        # print(products_api.update_collection_by_id(i, "Hot Sale", '<div style="text-align: center;"><strong>🎁 Over $69 Get Extra 5% OFF (CODE: PUSH5)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $109 Get Extra 10% OFF (CODE: PUSH10)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $139 Get Extra 15% OFF (CODE: PUSH15)</strong></div>'))
+        print(products_api.update_collection_by_id(i, "Hot Sale", ''))
     # print(products_api.update_custom_collection_by_id(81154736173, 1, 1))
     # products_api.get_all_products(limit="250", since_id="1833170796589")
     # products_api.get_order(create_start_time="2019-05-22T0:0:0-04:00", create_end_time="2019-05-28T0:0:0-04:00", key_word="google", financial_status="paid")
