@@ -56,10 +56,10 @@ class TaskProcessor:
         # self.motify_product_collections_meta()
         # self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
-        self.motify_product_meta()
+        # self.motify_product_meta()
         self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
         # 更新产品
-        self.update_product()
+        # self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
                                                      max_instances=50)
 
@@ -113,15 +113,15 @@ class TaskProcessor:
                     for row in remark_dict:
                         remark_title = remark_title.replace(row,remark_dict[row])
                         remark_description = remark_description.replace(row,remark_dict[row])
-                result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
-                if result["code"] == 1:
-                    cursor.execute(
-                        '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
-                        (remark_title, remark_description, id))
-                else:
-                    cursor.execute(
-                        '''update `product` set error_text=%s, state=3 where id=%s''',
-                        (result["data"],id))
+                    result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
+                    if result["code"] == 1:
+                        cursor.execute(
+                            '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
+                            (remark_title, remark_description, id))
+                    else:
+                        cursor.execute(
+                            '''update `product` set error_text=%s, state=3 where id=%s''',
+                            (result["data"],id))
                     conn.commit()
         except Exception as e:
             logger.exception("motify_product_meta e={}".format(e))
