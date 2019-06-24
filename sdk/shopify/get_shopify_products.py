@@ -3,6 +3,7 @@ import requests
 from config import logger
 import json
 from config import SHOPIFY_CONFIG
+import urllib.parse
 
 
 class ProductsApi:
@@ -23,7 +24,7 @@ class ProductsApi:
         self.version_url = "/admin/api/2019-04/"
         self.headers = {'Content-Type': 'application/json'}
 
-    def get_collections(self):
+    def get_all_collections(self):
         shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}custom_collections.json"
         shop_url2 = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}smart_collections.json"
         try:
@@ -34,13 +35,27 @@ class ProductsApi:
                 logger.info("get shopify all collections info is success")
                 res_dict = json.loads(result.text)
                 res_dict.update(json.loads(result2.text))
-                return {"code": 1, "msg": "", "data": res_dict}
+                return {"code": 1, "msg": "", "data": self.parse_collections(res_dict)}
             else:
                 logger.info("get shopify all collections info is failed")
                 return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
         except Exception as e:
             logger.error("get shopify all collections info is failed info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
+
+    @classmethod
+    def parse_collections(cls, data):
+        all_collections = []
+        for col in data["custom_collections"] + data["smart_collections"]:
+            all_collections.append(
+                {
+                    "uuid": col.get("id", ""),
+                    "meta_title": col.get("title", ""),
+                    "address": "/collections/" + col.get("title", "").lower().replace("'", "").replace(" ", "-"),
+                    "meta_description": col.get("body_html", ""),
+                }
+            )
+        return all_collections
 
     def get_shop_info(self):
         """
@@ -194,7 +209,6 @@ class ProductsApi:
             logger.error("get shopify token is exception {}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
-
     def get_metafields(self):
         shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}products/1831407157293/metafields.json"
         try:
@@ -209,9 +223,17 @@ class ProductsApi:
             logger.error("get shopify info is failed info={}".format(str(e)))
             return {"code": -1, "msg": str(e), "data": ""}
 
-    def update_custom_collection_by_id(self, collection_id, title, description):
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/custom_collections/{collection_id}.json"
-        params = {
+    def update_collection_by_id(self, collection_id, title, description):
+        smart_shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/smart_collections/{collection_id}.json"
+        smart_params = {
+            "smart_collection": {
+                "id": collection_id,
+                "body_html": description,
+                "title": title
+            }
+        }
+        custom_shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/custom_collections/{collection_id}.json"
+        custom_params = {
             "custom_collection": {
                 "id": collection_id,
                 "body_html": description,
@@ -219,28 +241,9 @@ class ProductsApi:
             }
         }
         try:
-            result = requests.put(shop_url, json.dumps(params), headers=self.headers)
-            if result.status_code == 200:
-                logger.info("update shopify a collection({}) info is success".format(collection_id))
-                return {"code": 1, "msg": "", "data": json.loads(result.text)}
-            else:
-                logger.info("update shopify a collection({}) info is failed".format(collection_id))
-                return {"code": 2, "msg": json.loads(result.text).get("errors", ""), "data": ""}
-        except Exception as e:
-            logger.error("update shopify a collection({}) info is failed info={}".format(collection_id, str(e)))
-            return {"code": -1, "msg": str(e), "data": ""}
-
-    def update_smart_collection_by_id(self, collection_id, title, description):
-        shop_url = f"https://{self.client_id}:{self.access_token}@{self.shop_uri}{self.version_url}/smart_collections/{collection_id}.json"
-        params = {
-            "smart_collection": {
-                "id": collection_id,
-                "body_html": description,
-                "title": title
-            }
-        }
-        try:
-            result = requests.put(shop_url, json.dumps(params), headers=self.headers)
+            result = requests.put(smart_shop_url, json.dumps(smart_params), headers=self.headers)
+            if result.status_code == 404:
+                result = requests.put(custom_shop_url, json.dumps(custom_params), headers=self.headers)
             if result.status_code == 200:
                 logger.info("update shopify a collection({}) info is success".format(collection_id))
                 return {"code": 1, "msg": "", "data": json.loads(result.text)}
@@ -260,9 +263,9 @@ if __name__ == '__main__':
     id = "3583116148816"
     shop_uri = "tiptopfree.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
-    # print(products_api.get_custom_collections())
-    # print(products_api.update_smart_collection_by_id(81154736173))
-    # print(products_api.update_custom_collection_by_id(80778231853))
+    # print(products_api.get_collections())
+    print(products_api.update_smart_collection_by_id(80778231853, "Hot Sale", '<div style="text-align: center;"><strong>🎁 Over $69 Get Extra 5% OFF (CODE: PUSH5)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $109 Get Extra 10% OFF (CODE: PUSH10)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $139 Get Extra 15% OFF (CODE: PUSH15)</strong></div>'))
+    # print(products_api.update_custom_collection_by_id(81154736173, 1, 1))
     # products_api.get_all_products(limit="250", since_id="1833170796589")
     # products_api.get_order(create_start_time="2019-05-22T0:0:0-04:00", create_end_time="2019-05-28T0:0:0-04:00", key_word="google", financial_status="paid")
     # products_api.get_shop_info()

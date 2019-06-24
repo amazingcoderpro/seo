@@ -63,3 +63,24 @@ class Product(models.Model):
         unique_together = ("uuid", "store")
         db_table = 'product'
         ordering = ["-id"]
+
+
+class Collection(models.Model):
+    """类目表"""
+    uuid = models.CharField(max_length=64, verbose_name="类目唯一标识")
+    address = models.CharField(max_length=255, verbose_name="类目地址")
+    meta_title = models.CharField(blank=True, null=True, max_length=255, verbose_name="类目meta_title")
+    meta_description = models.TextField(blank=True, null=True, verbose_name="类目meta_description")
+    remark_title = models.TextField(blank=True, null=True, verbose_name="产品title_remark")
+    remark_description = models.TextField(blank=True, null=True, verbose_name="产品description_remark")
+    store = models.ForeignKey(Store, on_delete=models.DO_NOTHING)
+    error_text = models.TextField(blank=True, null=True, verbose_name="发布错误信息")
+
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    update_time = models.DateTimeField(auto_now=True, verbose_name="更新时间")
+
+    class Meta:
+        # managed = False
+        unique_together = ("uuid", "store")
+        db_table = 'collection'
+        ordering = ["-id"]
