@@ -52,19 +52,20 @@ class CollectionMotifyViews(generics.CreateAPIView):
             return Response({"detail": "collection_list cannot be empty"},status=status.HTTP_400_BAD_REQUEST)
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
-        access_token, shop_uri = store.token, store.uri
+        access_token, shop_uri, domain = store.token, store.uri, store.url
         api_obj = ProductsApi(access_token, shop_uri)
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
-            res = api_obj.update_collection_by_id(collection_obj.first().uuid, request.data["meta_title"], request.data["meta_description"])
+            title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_description).replace("%Domain%", domain)
+            res = api_obj.update_collection_by_id(collection_obj.first().uuid, title, description)
             if res["code"] == 1:
-                collection_obj.update(meta_title=request.data["meta_title"], meta_description=request.data["meta_description"],
-                                      remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
+                collection_obj.update(remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
                                       update_time=datetime.datetime.now())
                 logger.info("update collection({}) success.".format(collection_obj.first().meta_title))
             else:
                 logger.info("update collection({}) failed. error is {}".format(collection_obj.first().meta_title, res["msg"]))
-                return Response({"detail": res["msg"]},status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": res["msg"]}, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "update all collections success."}, status=status.HTTP_200_OK)
 
 
