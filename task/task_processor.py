@@ -56,7 +56,7 @@ class TaskProcessor:
         # self.motify_product_collections_meta()
         #self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
-        # self.motify_product_meta()
+        self.motify_product_meta()
         self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=1)
         # 更新产品
         # self.update_product()
@@ -103,10 +103,10 @@ class TaskProcessor:
                 cursor.execute('''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',(store[0],))
                 products = cursor.fetchall()
                 if not products:
-                    logger.info("there have no new store to analyze.")
-                    return True
+                    continue
                 for item in products:
                     id, domain, price, uuid, type, title, remark_title, remark_description, variants = item
+                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id,store[0]))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
                                    "%Product Price%": price, "%Domain%": url}
@@ -115,10 +115,12 @@ class TaskProcessor:
                         remark_description = remark_description.replace(row,remark_dict[row])
                     result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
                     if result["code"] == 1:
+                        logger.error("successful motify_product_meta product_id={}, store_id={}".format(id, store[0]))
                         cursor.execute(
                             '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
                             (remark_title, remark_description, id))
                     else:
+                        logger.error("faild motify_product_meta product_id={}, store_id={}".format(id, store[0]))
                         cursor.execute(
                             '''update `product` set error_text=%s, state=3 where id=%s''',
                             (result["data"],id))

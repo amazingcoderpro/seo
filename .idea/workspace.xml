@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="faf9d28a-4587-47c2-9202-0ceb262f469e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/task/task_processor.py" beforeDir="false" afterPath="$PROJECT_DIR$/task/task_processor.py" afterDir="false" />
-    </list>
+    <list default="true" id="faf9d28a-4587-47c2-9202-0ceb262f469e" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/task/task_processor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="419">
-              <caret line="62" column="8" selection-start-line="62" selection-start-column="8" selection-end-line="62" selection-end-column="8" />
+            <state relative-caret-position="335">
+              <caret line="59" column="98" selection-start-line="59" selection-start-column="91" selection-end-line="59" selection-end-column="98" />
               <folding>
                 <element signature="e#0#65#0" expanded="true" />
               </folding>
@@ -232,10 +229,11 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="3189000" />
+    <option name="totallyTimeSpent" value="3515000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1920" y="-260" width="1920" height="1080" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1368477" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -397,8 +395,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/task/task_processor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="419">
-          <caret line="62" column="8" selection-start-line="62" selection-start-column="8" selection-end-line="62" selection-end-column="8" />
+        <state relative-caret-position="335">
+          <caret line="59" column="98" selection-start-line="59" selection-start-column="91" selection-end-line="59" selection-end-column="98" />
           <folding>
             <element signature="e#0#65#0" expanded="true" />
           </folding>
