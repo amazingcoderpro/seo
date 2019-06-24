@@ -53,8 +53,8 @@ class TaskProcessor:
     def start_all(self, product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600):
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
-        self.motify_product_collections_meta()
-        self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_interval, max_instances=50)
+        # self.motify_product_collections_meta()
+        # self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
         self.motify_product_meta()
         self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
@@ -360,8 +360,8 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
+    main()
     # TaskProcessor().product()
     # TaskProcessor().update_product()
-    TaskProcessor().update_collection()
+    # TaskProcessor().update_collection()
     #TaskProcessor().motify_product_meta()
