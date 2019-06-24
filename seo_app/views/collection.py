@@ -57,7 +57,7 @@ class CollectionMotifyViews(generics.CreateAPIView):
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
             title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
-            description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_description).replace("%Domain%", domain)
+            description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
             title_res = api_obj.update_collection_seo_title(collection_obj.first().uuid, title)
             description_res = api_obj.update_collection_seo_description(collection_obj.first().uuid, description)
             if title_res["code"] == 1 and description_res["code"] == 1:
