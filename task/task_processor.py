@@ -54,14 +54,14 @@ class TaskProcessor:
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
         # self.motify_product_collections_meta()
-        # self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
+        #self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
         # self.motify_product_meta()
-        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=50)
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=1)
         # 更新产品
         # self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
-                                                     max_instances=50)
+                                                     max_instances=1)
 
     def motify_product_collections_meta(self):
         pass
