@@ -16,11 +16,11 @@ class ShopifyCallback(APIView):
         code = request.query_params.get("code", None)
         shop = request.query_params.get("shop", None)
         if not code or not shop:
-            return HttpResponseRedirect(redirect_to="https://pinbooster.seamarketings.com/aut_state?state=2")
+            return HttpResponseRedirect(redirect_to="https://autometa.seamarketings.com/aut_state?state=2")
         shop_name = shop.split(".")[0]
         result = ShopifyBase(shop).get_token(code)
         if result["code"] != 1:
-            return HttpResponseRedirect(redirect_to="https://pinbooster.seamarketings.com/aut_state?state=2")
+            return HttpResponseRedirect(redirect_to="https://autometa.seamarketings.com/aut_state?state=2")
         instance = models.Store.objects.filter(url=shop).first()
         if instance:
             instance.token = result["data"]
@@ -28,7 +28,6 @@ class ShopifyCallback(APIView):
             user_instance = models.User.objects.filter(id=instance.user_id).first()
             user_instance.is_active = 0
             user_instance.password = ""
-            user_instance.code = random_code.create_random_code(6, True)
             user_instance.save()
             email = user_instance.email
         else:
@@ -41,7 +40,7 @@ class ShopifyCallback(APIView):
             instance.user = user_instance
             instance.email = email
             instance.save()
-        return HttpResponseRedirect(redirect_to="https://pinbooster.seamarketings.com/shopfy_regist?shop={}&email={}&id={}".format(shop, email, user_instance.id))
+        return HttpResponseRedirect(redirect_to="https://autometa.seamarketings.com/shopfy_regist?shop={}&email={}&id={}".format(shop, email, user_instance.id))
 
 
 class ShopifyAuthView(APIView):

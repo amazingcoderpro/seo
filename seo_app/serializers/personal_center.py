@@ -39,12 +39,13 @@ class SetPasswordSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if instance.username == validated_data["username"] and instance.is_active == 1:
             raise serializers.ValidationError("Please check that the input or account is activated.")
+        instance.is_active = 1
         instance.set_password(validated_data["password"])
         instance.save()
-        comment = {"username": instance.username, "password": validated_data["password"], "code": instance.code}
+        # comment = {"username": instance.username, "password": validated_data["password"], "code": instance.code}
+        # # msg = send_sms_agent.SMS(content=comment, to=(instance.email,))
         # msg = send_sms_agent.SMS(content=comment, to=(instance.email,))
-        msg = send_sms_agent.SMS(content=comment, to=(instance.email,))
-        msg.send_email()
+        # msg.send_email()
         return instance
 
 
