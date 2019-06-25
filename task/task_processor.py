@@ -93,7 +93,7 @@ class TaskProcessor:
             if not cursor:
                 return False
 
-            cursor.execute('''select store.id,store.token,store.uri from store left join user on store.user_id = user.id where user.is_active = 1''')
+            cursor.execute('''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
             stores = cursor.fetchall()
             if not stores:
                 logger.info("there have no new store to analyze.")
@@ -148,11 +148,11 @@ class TaskProcessor:
 
             if url:
                 cursor.execute(
-                    '''select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
+                    '''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
                     (url,))
             else:
                 cursor.execute(
-                    """select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+                    """select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
             # 遍历数据库中的所有store，更新产品信息
