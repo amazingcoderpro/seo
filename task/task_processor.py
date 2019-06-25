@@ -211,10 +211,10 @@ class TaskProcessor:
                 return False
 
             if url:
-                cursor.execute('''select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
+                cursor.execute('''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
                                (url,))
             else:
-                cursor.execute("""select store.id, store.uri,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+                cursor.execute("""select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
 
