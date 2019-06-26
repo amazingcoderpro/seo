@@ -13,9 +13,11 @@ import requests
 from sdk.shopify.get_shopify_products import ProductsApi
 from config import logger
 
+MYSQL_PASSWD = os.getenv('MYSQL_PASSWD', None)
+MYSQL_HOST = os.getenv('MYSQL_HOST', None)
 
 class DBUtil:
-    def __init__(self, host="47.244.107.240", port=3306, db="seo", user="seo", password="seo@orderplus.com"):
+    def __init__(self, host=MYSQL_HOST, port=3306, db="seo", user="seo", password=MYSQL_PASSWD):
         self.conn_pool = {}
         self.host = host
         self.port = port
@@ -258,8 +260,6 @@ class TaskProcessor:
                             if uuid in uuid_list:
                                 continue
                             sku = pro.get("handle", "")
-                            if "-" in sku:
-                                continue
                             title = pro.get("title", "")
                             domain = "https://{}/products/{}".format(store_uri, sku)
                             type = pro.get("product_type", "")

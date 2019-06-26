@@ -62,7 +62,7 @@ class CollectionMotifyViews(generics.CreateAPIView):
             description_res = api_obj.update_collection_seo_description(collection_obj.first().uuid, description)
             if title_res["code"] == 1 and description_res["code"] == 1:
                 collection_obj.update(remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
-                                          update_time=datetime.datetime.now())
+                                      update_time=datetime.datetime.now())
                 logger.info("update collection({}) success.".format(collection_obj.first().meta_title))
             else:
                 logger.info("update collection({}) failed. error is {}".format(collection_obj.first().meta_title, description_res["msg"] if title_res["code"]==1 else title_res["msg"]))

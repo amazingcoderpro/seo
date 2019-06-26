@@ -17,6 +17,10 @@ import datetime,random
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+MYSQL_PASSWD = os.getenv('MYSQL_PASSWD', None)
+MYSQL_HOST = os.getenv('MYSQL_HOST', None)
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
@@ -24,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'z&y0=8)b&9h4tvh+$=#0l&8kxy%5p%@jmxc_#57h8nh$02=y2d'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -80,10 +84,10 @@ WSGI_APPLICATION = 'seo.wsgi.application'
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.mysql',
-    'NAME':'seo',
+    'NAME': 'seo',
     'USER': 'seo',
-    'PASSWORD': 'seo@orderplus.com',
-    'HOST': '47.244.107.240',
+    'PASSWORD': MYSQL_PASSWD,
+    'HOST': MYSQL_HOST,
     'PORT': '3306',
     'OPTIONS': {"init_command": "SET foreign_key_checks = 0;",}
     }
@@ -143,19 +147,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': JWT_AUTH_HEADER_PREFIX,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_SECRET_KEY': 'seo',
+
+    
 }
-
-
-#######################
-# DEFINE EMAIL CONFIG #
-#######################
-
-EMAIL_HOST = "smtpout.secureserver.net"
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "service@pinbooster.seamarketings.com"
-EMAIL_HOST_PASSWORD = "orderplus"
-DEFAULT_FROM_EMAIL = "PinBooster Customer Support <service@pinbooster.seamarketings.com>"
-EMAIL_USE_SSL = True
-EMAIL_SUBJECT_PREFIX = " "
-# 默认邮件接收方(开发人员，如果代码出现极端异常可进行邮件通知.)
-DEFAULT_TO_EMAILS = ["877252373@qq.com", ]
