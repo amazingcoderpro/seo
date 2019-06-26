@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from seo_app import models
-from seo_app.utils import send_sms_agent
 
 
 class LoginSerializer(serializers.ModelSerializer):
