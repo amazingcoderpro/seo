@@ -260,8 +260,6 @@ class TaskProcessor:
                             if uuid in uuid_list:
                                 continue
                             sku = pro.get("handle", "")
-                            if "-" in sku:
-                                continue
                             title = pro.get("title", "")
                             domain = "https://{}/products/{}".format(store_uri, sku)
                             type = pro.get("product_type", "")
