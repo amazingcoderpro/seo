@@ -147,4 +147,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': JWT_AUTH_HEADER_PREFIX,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_SECRET_KEY': 'seo',
+
+    
 }
