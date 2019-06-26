@@ -1,7 +1,7 @@
 ## 1. 服务器启动
 
 ```
-MYSQL_HOST=47.244.107.240 MYSQL_PASSWD=seo@orderplus.com python3 manage.py runserver 0.0.0.0:8000
+MYSQL_HOST= MYSQL_PASSWD= python3 manage.py runserver 0.0.0.0:8000
 ```
 
 
