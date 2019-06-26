@@ -124,7 +124,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -147,4 +147,6 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': JWT_AUTH_HEADER_PREFIX,
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
     'JWT_SECRET_KEY': 'seo',
+
+    
 }
