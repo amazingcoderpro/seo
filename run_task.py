@@ -8,7 +8,7 @@ from task.task_processor import TaskProcessor
 
 def main():
     tsp = TaskProcessor()
-    tsp.start_all(product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600)
+    tsp.start_all(product_collections_meta_interval=3600*4, product_meta_interval=600, product_interval=3600)
     while 1:
         time.sleep(1)
 

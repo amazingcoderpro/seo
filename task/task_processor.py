@@ -16,6 +16,7 @@ from config import logger
 MYSQL_PASSWD = os.getenv('MYSQL_PASSWD', None)
 MYSQL_HOST = os.getenv('MYSQL_HOST', None)
 
+
 class DBUtil:
     def __init__(self, host=MYSQL_HOST, port=3306, db="seo", user="seo", password=MYSQL_PASSWD):
         self.conn_pool = {}
@@ -51,19 +52,25 @@ class TaskProcessor:
         self.product_collections_job = None
         self.product_job = None
         self.update_product_job = None
+        self.update_collection_job = None
 
-    def start_all(self, product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600):
+    def start_all(self, product_collections_meta_interval=3600*4, product_meta_interval=600, product_interval=3600):
         logger.info("TaskProcessor start all work.")
         # 修改产品类目meta
         # self.motify_product_collections_meta()
-        #self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
+        # self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
         # 修改产品meta
         self.motify_product_meta()
-        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval', seconds=product_meta_interval, max_instances=1)
+        self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval',
+                                                     seconds=product_meta_interval, max_instances=1)
         # 更新产品
         # self.update_product()
         self.update_product_job = self.bk_scheduler.add_job(self.update_product, 'interval', seconds=product_interval,
-                                                     max_instances=1)
+                                                            max_instances=1)
+        # 更新类目信息
+        self.update_collection_job = self.bk_scheduler.add_job(self.update_collection, 'interval',
+                                                               seconds=product_collections_meta_interval,
+                                                               max_instances=1)
 
     def motify_product_collections_meta(self):
         pass
@@ -95,26 +102,29 @@ class TaskProcessor:
             if not cursor:
                 return False
 
-            cursor.execute('''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
+            cursor.execute(
+                '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
             stores = cursor.fetchall()
             if not stores:
                 logger.info("there have no new store to analyze.")
                 return True
             # store_list = [item[0] for item in store]
             for store in stores:
-                cursor.execute('''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',(store[0],))
+                cursor.execute(
+                    '''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',
+                    (store[0],))
                 products = cursor.fetchall()
                 if not products:
                     continue
                 for item in products:
                     id, domain, price, uuid, type, title, remark_title, remark_description, variants = item
-                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id,store[0]))
+                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id, store[0]))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
                                    "%Product Price%": price, "%Domain%": url}
                     for row in remark_dict:
-                        remark_title = remark_title.replace(row,remark_dict[row])
-                        remark_description = remark_description.replace(row,remark_dict[row])
+                        remark_title = remark_title.replace(row, remark_dict[row])
+                        remark_description = remark_description.replace(row, remark_dict[row])
                     result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
                     if result["code"] == 1:
                         logger.error("successful motify_product_meta product_id={}, store_id={}".format(id, store[0]))
@@ -125,7 +135,7 @@ class TaskProcessor:
                         logger.error("faild motify_product_meta product_id={}, store_id={}".format(id, store[0]))
                         cursor.execute(
                             '''update `product` set error_text=%s, state=3 where id=%s''',
-                            (result["data"],id))
+                            (result["data"], id))
                     conn.commit()
         except Exception as e:
             logger.exception("motify_product_meta e={}".format(e))
@@ -213,20 +223,20 @@ class TaskProcessor:
                 return False
 
             if url:
-                cursor.execute('''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
-                               (url,))
+                cursor.execute(
+                    '''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
+                    (url,))
             else:
-                cursor.execute("""select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+                cursor.execute(
+                    """select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
-
-
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
                 store_id, store_uri, store_token = store
 
                 # 取中已经存在的所有products, 只需更新即可
-                cursor.execute('''select id, uuid from `product` where store_id=%s''',(store_id))
+                cursor.execute('''select id, uuid from `product` where store_id=%s''', (store_id))
                 exist_products = cursor.fetchall()
                 exist_products_dict = {}
                 for exp in exist_products:
@@ -254,7 +264,9 @@ class TaskProcessor:
                         break
                     if ret["code"] == 1:
                         products = ret["data"].get("products", [])
-                        logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,len(products)))
+                        logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,
+                                                                                                               len(
+                                                                                                                   products)))
                         for pro in products:
                             uuid = str(pro.get("id", ""))
                             if uuid in uuid_list:
@@ -291,8 +303,11 @@ class TaskProcessor:
                                 pro_image = ""
                             thumbnail = self.image_2_base64(pro_image)
 
-
-                            logger.info("update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid))
+                            logger.info(
+                                "update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price,
+                                                                                            type, domain, title,
+                                                                                            time_now, time_now,
+                                                                                            store_id, uuid))
                             try:
                                 if uuid in exist_products_dict.keys():
                                     pro_id = exist_products_dict[uuid]
@@ -305,7 +320,8 @@ class TaskProcessor:
                                 else:
                                     cursor.execute(
                                         "insert into `product` (`thumbnail`, `sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, time_now, store_id, uuid, 0))
+                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, time_now,
+                                         store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
 
                                 conn.commit()
@@ -356,7 +372,7 @@ class TaskProcessor:
 
 def main():
     tsp = TaskProcessor()
-    tsp.start_all(product_collections_meta_interval=3600,product_meta_interval=600,product_interval=3600)
+    tsp.start_all(product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600)
     while 1:
         time.sleep(1)
 
@@ -366,4 +382,4 @@ if __name__ == '__main__':
     # TaskProcessor().product()
     # TaskProcessor().update_product()
     # TaskProcessor().update_collection()
-    #TaskProcessor().motify_product_meta()
+    # TaskProcessor().motify_product_meta()
