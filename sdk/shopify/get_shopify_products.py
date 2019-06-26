@@ -46,6 +46,8 @@ class ProductsApi:
     def parse_collections(cls, data):
         all_collections = []
         for col in data["custom_collections"] + data["smart_collections"]:
+            if "home" in col.get("title", "").lower():
+                continue
             all_collections.append(
                 {
                     "uuid": col.get("id", ""),
