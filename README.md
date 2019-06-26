@@ -1,3 +1,13 @@
+## 1. 服务器启动
+
+```
+MYSQL_HOST=47.244.107.240 MYSQL_PASSWD=seo@orderplus.com python3 manage.py runserver 0.0.0.0:8000
+```
+
+
+
+
+
 ## 1. 数据库创建数据
 ```
 INSERT INTO `user` (`id`, `last_login`, `is_superuser`, `first_name`, `last_name`, `is_staff`, `is_active`, `date_joined`, `username`, `email`, `password`, `code`, `create_time`, `update_time`)
