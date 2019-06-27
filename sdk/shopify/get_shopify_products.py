@@ -204,17 +204,17 @@ class ProductsApi:
 
 if __name__ == '__main__':
     client_id = "7fced15ff9d1a461f10979c3eae2eca8"
-    access_token = "b5e11d595f09d8e99ddb956f72eb8c84"
-    shop = "ordersea.myshopify.com"
+    access_token = "d34263b34fa4eff4003ed20c0d5d3ef3"
+    shop = "mrbeauti.myshopify.com"
     scopes = "write_orders,read_customers"
     callback_uri = "http://www.orderplus.com/index.html"
     id = "3583116148816"
-    shop_uri = "tiptopfree.myshopify.com"
+    shop_uri = "mrbeauti.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
-    # print(products_api.get_all_collections())
+    print(products_api.get_shop_info())
     # a = [80778231853,80778199085,80776429613,80776855597,80778330157,80776462381,80776495149,80776593453,80778723373,80778395693,80776888365]
     # for i in [81154736173,80777314349,80776921133,80778002477,80778592301,80776986669,80777216045,80777674797,80777838637,80777379885,80777281581,80777510957,80777412653,80777609261,80778526765,80777478189,80777183277,80777445421,80777740333,80777805869,80778035245,80777052205,80776953901,80777347117,80777969709,80778756141]:
         # print(products_api.update_collection_by_id(i, "Hot Sale", '<div style="text-align: center;"><strong>🎁 Over $69 Get Extra 5% OFF (CODE: PUSH5)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $109 Get Extra 10% OFF (CODE: PUSH10)</strong></div>\n<div style="text-align: center;"><strong>🎁 Over $139 Get Extra 15% OFF (CODE: PUSH15)</strong></div>'))
-    print(products_api.update_collection_seo_title(80778199085, "New Arrivals TeT"))
-    print(products_api.update_collection_seo_description(80778199085, "very nice"))
+    # print(products_api.update_collection_seo_title(80778199085, "New Arrivals TeT"))
+    # print(products_api.update_collection_seo_description(80778199085, "very nice"))
 

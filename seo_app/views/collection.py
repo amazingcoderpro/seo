@@ -52,7 +52,8 @@ class CollectionMotifyViews(generics.CreateAPIView):
             return Response({"detail": "collection_list cannot be empty"},status=status.HTTP_400_BAD_REQUEST)
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
-        access_token, shop_uri, domain = store.token, store.url, store.url
+        access_token, shop_uri = store.token, store.url
+        domain = shop_uri.replace(".myshopify", "")
         api_obj = ProductsApi(access_token, shop_uri)
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
