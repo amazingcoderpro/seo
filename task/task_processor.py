@@ -395,9 +395,9 @@ def main():
 
 
 if __name__ == '__main__':
-    # main()
-    # TaskProcessor().product()
-    # TaskProcessor().update_product()
-    # TaskProcessor().update_collection()
-    # TaskProcessor().motify_product_meta()
-    TaskProcessor().update_store()
+    main()
+    # # TaskProcessor().product()
+    # # TaskProcessor().update_product()
+    # # TaskProcessor().update_collection()
+    # # TaskProcessor().motify_product_meta()
+    # TaskProcessor().update_store()
