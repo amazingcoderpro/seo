@@ -53,12 +53,15 @@ class TaskProcessor:
         self.product_job = None
         self.update_product_job = None
         self.update_collection_job = None
+        self.update_store_job = None
 
-    def start_all(self, product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600):
+
+    def start_all(self, update_store=3600, product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600):
         logger.info("TaskProcessor start all work.")
-        # 修改产品类目meta
-        # self.motify_product_collections_meta()
-        # self.product_collections_job = self.bk_scheduler.add_job(self.motify_product_collections_meta, 'interval', seconds=product_collections_meta_interval, max_instances=50)
+        # 更新店铺信息
+        self.update_store()
+        self.update_store_job = self.bk_scheduler.add_job(self.update_store, 'interval', seconds=product_collections_meta_interval, max_instances=50)
+
         # 修改产品meta
         self.motify_product_meta()
         self.product_job = self.bk_scheduler.add_job(self.motify_product_meta, 'interval',
@@ -73,26 +76,39 @@ class TaskProcessor:
                                                                seconds=product_collections_meta_interval,
                                                                max_instances=1)
 
-    def motify_product_collections_meta(self):
-        pass
-        # logger.info("product_collections checking...")
-        # try:
-        #     conn = DBUtil().get_instance()
-        #     cursor = conn.cursor() if conn else None
-        #     if not cursor:
-        #         return False
-        #
-        #     cursor.execute('''select id, name, uri, token, user_id from `store` where id = 2''')
-        #     store = cursor.fetchall()
-        #     if not store:
-        #         logger.info("there have no new store to analyze.")
-        #         return True
-        #     print(store[0][3])
-        #     print(store[0][2])
-        #     collections = ProductsApi(store[0][3],store[0][2]).get_custom_collections()
-        #     print(collections)
-        # except Exception as e:
-        #     pass
+
+    def update_store(self):
+        """更新店铺信息"""
+        logger.info("store checking...")
+        try:
+            conn = DBUtil().get_instance()
+            cursor = conn.cursor() if conn else None
+            if not cursor:
+                return False
+
+            cursor.execute(
+                '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
+            stores = cursor.fetchall()
+            if not stores:
+                logger.info("there have no new store to analyze.")
+                return True
+
+            for store in stores:
+                papi = ProductsApi(store[1], store[2])
+                ret = papi.get_shop_info()
+                if ret["code"] == 1:
+                    money_format = ret["data"]["shop"]["money_with_currency_format"].split("{")[0]
+                    cursor.execute(
+                        '''update `store` set money_format=%s where id=%s''',
+                        (money_format, store[0]))
+                conn.commit()
+        except Exception as e:
+            logger.exception("get_products e={}".format(e))
+            return False
+        finally:
+            cursor.close() if cursor else 0
+            conn.close() if conn else 0
+        return True
 
     def motify_product_meta(self):
         """修改产品meta"""
@@ -229,7 +245,7 @@ class TaskProcessor:
                     (url,))
             else:
                 cursor.execute(
-                    """select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1""")
+                    """select store.id, store.url,store.token，store.money_format from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
             # 遍历数据库中的所有store，更新产品信息
@@ -278,9 +294,9 @@ class TaskProcessor:
                             type = pro.get("product_type", "")
                             variants = pro.get("variants", [])
                             sku = pro.get("handle", "")
-                            price = variants[0].get("price", "") if variants else 0
+                            price = store[3] + variants[0].get("price", "") if variants else 0
                             time_now = datetime.datetime.now()
-                            variants_price_str = ""
+                            variants_price_str = store[3]
                             variants_color_str = " Color"
                             variants_size_str = " Size"
                             variants_str = ""
@@ -373,14 +389,15 @@ class TaskProcessor:
 
 def main():
     tsp = TaskProcessor()
-    tsp.start_all(product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600)
+    tsp.start_all(update_store=3600, product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600)
     while 1:
         time.sleep(1)
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # TaskProcessor().product()
     # TaskProcessor().update_product()
     # TaskProcessor().update_collection()
     # TaskProcessor().motify_product_meta()
+    TaskProcessor().update_store()
