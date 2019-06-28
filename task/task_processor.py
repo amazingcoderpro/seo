@@ -245,12 +245,12 @@ class TaskProcessor:
                     (url,))
             else:
                 cursor.execute(
-                    """select store.id, store.url,store.token，store.money_format from store left join user on store.user_id = user.id where user.is_active = 1""")
+                    """select store.id, store.url,store.token, store.money_format from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
-                store_id, store_uri, store_token = store
+                store_id, store_uri, store_token,money_format = store
 
                 # 取中已经存在的所有products, 只需更新即可
                 cursor.execute('''select id, uuid from `product` where store_id=%s''', (store_id))
@@ -294,7 +294,7 @@ class TaskProcessor:
                             type = pro.get("product_type", "")
                             variants = pro.get("variants", [])
                             sku = pro.get("handle", "")
-                            price = store[3] + variants[0].get("price", "") if variants else 0
+                            price = money_format + variants[0].get("price", "") if variants else 0
                             time_now = datetime.datetime.now()
                             variants_price_str = store[3]
                             variants_color_str = " Color"
@@ -395,9 +395,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
     # # TaskProcessor().product()
-    # # TaskProcessor().update_product()
+    TaskProcessor().update_product()
     # # TaskProcessor().update_collection()
     # # TaskProcessor().motify_product_meta()
     # TaskProcessor().update_store()
