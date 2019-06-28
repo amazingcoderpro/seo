@@ -53,7 +53,7 @@ class CollectionMotifyViews(generics.CreateAPIView):
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
         access_token, shop_uri = store.token, store.url
-        domain = shop_uri.replace(".myshopify", "")
+        domain = shop_uri.replace(".myshopify", "").capitalize()
         api_obj = ProductsApi(access_token, shop_uri)
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
