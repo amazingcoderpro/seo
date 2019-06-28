@@ -296,7 +296,7 @@ class TaskProcessor:
                             sku = pro.get("handle", "")
                             price = money_format + variants[0].get("price", "") if variants else 0
                             time_now = datetime.datetime.now()
-                            variants_price_str = store[3]
+                            variants_price_str = money_format
                             variants_color_str = " Color"
                             variants_size_str = " Size"
                             variants_str = ""
