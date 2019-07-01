@@ -201,7 +201,6 @@ class TaskProcessor:
                             logger.exception("update product exception.")
                 else:
                     logger.warning("get shop collections failed. res={}".format(res))
-                    break
 
         except Exception as e:
             logger.exception("update_collection e={}".format(e))
@@ -379,8 +378,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
     # TaskProcessor().product()
     # TaskProcessor().update_product()
-    # TaskProcessor().update_collection()
+    TaskProcessor().update_collection()
     # TaskProcessor().motify_product_meta()
