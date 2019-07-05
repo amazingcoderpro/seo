@@ -9,11 +9,17 @@ from seo_app import models
 
 class CollectionSerializer(serializers.ModelSerializer):
     """collection"""
-    domain = serializers.CharField(source="store.url", read_only=True)
+    # domain = serializers.CharField(source="store.url", read_only=True)
+    domain = serializers.SerializerMethodField()
 
     class Meta:
         model = models.Collection
         fields = ("id", "uuid", "meta_title", "meta_description", "remark_title", "remark_description", "domain")
+
+    def get_domain(self, obj):
+        if not obj.store.url:
+            return ""
+        return obj.store.url.replace(".myshopify", "").capitalize()
 
 
 class CollectionMotifySerializer(serializers.ModelSerializer):
