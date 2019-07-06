@@ -138,7 +138,7 @@ class TaskProcessor:
                     logger.info("start motify_product_meta product_id={}, store_id={}".format(id, store[0]))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
-                                   "%Product Price%": price, "%Domain%": url}
+                                   "%Product Price%": price, "%Domain%": url.capitalize()}
                     for row in remark_dict:
                         remark_title = remark_title.replace(row, remark_dict[row])
                         remark_description = remark_description.replace(row, remark_dict[row])
