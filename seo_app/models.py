@@ -42,6 +42,7 @@ class Product(models.Model):
     """产品表"""
     domain = models.CharField(max_length=255, blank=True, null=True, verbose_name="产品domain")
     uuid = models.CharField(max_length=64, verbose_name="产品唯一标识")
+    description = models.TextField(blank=True, null=True, max_length=255, verbose_name="产品描述")
     sku = models.CharField(max_length=255, blank=True, null=True,verbose_name="产品sku")
     type = models.CharField(db_index=True, blank=True, null=True,max_length=255,  verbose_name="产品类型")
     title = models.CharField(db_index=True, blank=True, null=True, max_length=255, verbose_name="产品title")
