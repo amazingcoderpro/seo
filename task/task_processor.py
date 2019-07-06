@@ -253,7 +253,7 @@ class TaskProcessor:
                 store_id, store_uri, store_token,money_format = store
 
                 # 取中已经存在的所有products, 只需更新即可
-                cursor.execute('''select id, sku from `product` where store_id=%s''', (store_id))
+                cursor.execute('''select id, uuid from `product` where store_id=%s''', (store_id))
                 exist_products = cursor.fetchall()
                 exist_products_dict = {}
                 for exp in exist_products:
@@ -317,7 +317,7 @@ class TaskProcessor:
                                 variants_tmp_list = tmp_str.split(" ")
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
-                                variants_str = " ".join(variants_list) + " Sku " + str(sku)
+                                variants_str = " ".join(variants_list)
 
                             img_obj = pro.get("image", {})
                             if img_obj:
@@ -334,8 +334,8 @@ class TaskProcessor:
                                                                                             time_now, time_now,
                                                                                             store_id, uuid))
                             try:
-                                if sku in exist_products_dict.keys():
-                                    pro_id = exist_products_dict[sku]
+                                if uuid in exist_products_dict.keys():
+                                    pro_id = exist_products_dict[uuid]
                                     logger.info(
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
 
