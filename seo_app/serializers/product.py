@@ -4,9 +4,28 @@ from seo_app import models
 
 class ProductSerializer(serializers.ModelSerializer):
     """product"""
+
+    domain = serializers.SerializerMethodField()
     class Meta:
         model = models.Product
-        fields = "__all__"
+        fields = (
+            "domain",
+            "uuid",
+            "description",
+            "sku",
+            "type",
+            "title",
+            "price",
+            "variants",
+            "remark_title",
+            "remark_description",
+            "thumbnail",
+            "state"
+        )
+
+    def get_domain(self, obj):
+        url = obj.domain.split("//")[1].split(".")[0] + ".com"
+        return url.capitalize()
 
 
 class ProductMotifySerializer(serializers.ModelSerializer):
