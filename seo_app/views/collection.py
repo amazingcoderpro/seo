@@ -53,12 +53,18 @@ class CollectionMotifyViews(generics.CreateAPIView):
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
         access_token, shop_uri = store.token, store.url
-        domain = shop_uri.replace(".myshopify", "").capitalize()
+        domain = shop_uri.replace(".myshopify", "").capitalize() if shop_uri else ""
         api_obj = ProductsApi(access_token, shop_uri)
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
-            title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
-            description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            if request.data["remark_title"]:
+                title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            else:
+                title = ""
+            if request.data["remark_description"]:
+                description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            else:
+                description = ""
             title_res = api_obj.update_collection_seo_title(collection_obj.first().uuid, title)
             description_res = api_obj.update_collection_seo_description(collection_obj.first().uuid, description)
             if title_res["code"] == 1 and description_res["code"] == 1:
