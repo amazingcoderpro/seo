@@ -9,6 +9,7 @@ from io import BytesIO
 import base64
 from PIL import Image
 import requests
+import re
 
 from sdk.shopify.get_shopify_products import ProductsApi
 from config import logger
@@ -112,7 +113,7 @@ class TaskProcessor:
 
     def motify_product_meta(self):
         """修改产品meta"""
-        logger.info("motify_product_meta checking...")
+        logger.info("【motify_product_meta】 checking...")
         try:
             conn = DBUtil().get_instance()
             cursor = conn.cursor() if conn else None
@@ -123,39 +124,39 @@ class TaskProcessor:
                 '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
             stores = cursor.fetchall()
             if not stores:
-                logger.info("there have no new store to analyze.")
+                logger.info("【motify_product_meta】there have no new store to analyze.")
                 return True
             # store_list = [item[0] for item in store]
             for store in stores:
                 cursor.execute(
-                    '''select id, domain, price, uuid, type, title, remark_title, remark_description, variants from `product` where state=1 and store_id=%s''',
+                    '''select id, domain, price, uuid, type, title, remark_title, remark_description, variants, description from `product` where state=1 and store_id=%s''',
                     (store[0],))
                 products = cursor.fetchall()
                 if not products:
                     continue
                 for item in products:
-                    id, domain, price, uuid, type, title, remark_title, remark_description, variants = item
-                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                    id, domain, price, uuid, type, title, remark_title, remark_description, variants,description = item
+                    logger.info("【motify_product_meta】start update store_id={}, product_id={}".format(store[0], id))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
-                                   "%Product Price%": price, "%Domain%": url.capitalize()}
+                                   "%Product Price%": price, "%Product Description%":description, "%Domain%": url.capitalize()}
                     for row in remark_dict:
                         remark_title = remark_title.replace(row, remark_dict[row])
                         remark_description = remark_description.replace(row, remark_dict[row])
                     result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
                     if result["code"] == 1:
-                        logger.error("successful motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        logger.info("motify_product_meta】update successful  store_id={} product_id={} ".format(store[0], id))
                         cursor.execute(
                             '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
                             (remark_title, remark_description, id))
                     else:
-                        logger.error("faild motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        logger.error("motify_product_meta】update faild store_id={} product_id={} ".format(store[0], id))
                         cursor.execute(
                             '''update `product` set error_text=%s, state=3 where id=%s''',
                             (result["data"], id))
                     conn.commit()
         except Exception as e:
-            logger.exception("motify_product_meta e={}".format(e))
+            logger.exception("motify_product_meta】 e={}".format(e))
             return False
         finally:
             cursor.close() if cursor else 0
@@ -283,6 +284,8 @@ class TaskProcessor:
                         logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,
                                                                                                                len(
                                                                                                                    products)))
+                        p = re.compile(r"\s+")
+                        dr = re.compile(r'<[^>]+>', re.S)
                         for pro in products:
                             uuid = str(pro.get("id", ""))
                             if uuid in uuid_list:
@@ -295,6 +298,12 @@ class TaskProcessor:
                             sku = pro.get("handle", "")
                             price = money_format + variants[0].get("price", "") if variants else 0
                             time_now = datetime.datetime.now()
+
+                            # description
+                            body_html = pro.get("body_html")
+                            dd = dr.sub('', str(body_html))
+                            description = ' '.join(p.split(dd.strip().replace("\n", " "))).strip()
+
                             variants_price_str = money_format
                             variants_color_str = " Color"
                             variants_size_str = " Size"
@@ -308,7 +317,7 @@ class TaskProcessor:
                                 variants_tmp_list = tmp_str.split(" ")
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
-                                variants_str = " ".join(variants_list) + " Sku " + str(sku)
+                                variants_str = " ".join(variants_list)
 
                             img_obj = pro.get("image", {})
                             if img_obj:
@@ -331,12 +340,12 @@ class TaskProcessor:
                                         "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
 
                                     cursor.execute(
-                                        '''update `product` set thumbnail=%s, sku=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
-                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, pro_id))
+                                        '''update `product` set thumbnail=%s, sku=%s,description=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                        (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
-                                        "insert into `product` (`thumbnail`, `sku`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                                        (thumbnail, sku, variants_str, price, type, domain, title, time_now, time_now,
+                                        "insert into `product` (`thumbnail`, `sku`, `description`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, time_now,
                                          store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
 
