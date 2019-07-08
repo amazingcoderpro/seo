@@ -113,7 +113,7 @@ class TaskProcessor:
 
     def motify_product_meta(self):
         """修改产品meta"""
-        logger.info("motify_product_meta checking...")
+        logger.info("【motify_product_meta】 checking...")
         try:
             conn = DBUtil().get_instance()
             cursor = conn.cursor() if conn else None
@@ -124,7 +124,7 @@ class TaskProcessor:
                 '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
             stores = cursor.fetchall()
             if not stores:
-                logger.info("there have no new store to analyze.")
+                logger.info("【motify_product_meta】there have no new store to analyze.")
                 return True
             # store_list = [item[0] for item in store]
             for store in stores:
@@ -136,7 +136,7 @@ class TaskProcessor:
                     continue
                 for item in products:
                     id, domain, price, uuid, type, title, remark_title, remark_description, variants,description = item
-                    logger.info("start motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                    logger.info("【motify_product_meta】start update store_id={}, product_id={}".format(store[0], id))
                     url = domain.split("//")[1].split(".")[0] + ".com"
                     remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
                                    "%Product Price%": price, "%Product Description%":description, "%Domain%": url.capitalize()}
@@ -145,18 +145,18 @@ class TaskProcessor:
                         remark_description = remark_description.replace(row, remark_dict[row])
                     result = ProductsApi(store[1], store[2]).motify_product_meta(uuid, remark_title, remark_description)
                     if result["code"] == 1:
-                        logger.error("successful motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        logger.info("motify_product_meta】update successful  store_id={} product_id={} ".format(store[0], id))
                         cursor.execute(
                             '''update `product` set meta_title=%s, meta_description=%s, state=2 where id=%s''',
                             (remark_title, remark_description, id))
                     else:
-                        logger.error("faild motify_product_meta product_id={}, store_id={}".format(id, store[0]))
+                        logger.error("motify_product_meta】update faild store_id={} product_id={} ".format(store[0], id))
                         cursor.execute(
                             '''update `product` set error_text=%s, state=3 where id=%s''',
                             (result["data"], id))
                     conn.commit()
         except Exception as e:
-            logger.exception("motify_product_meta e={}".format(e))
+            logger.exception("motify_product_meta】 e={}".format(e))
             return False
         finally:
             cursor.close() if cursor else 0
