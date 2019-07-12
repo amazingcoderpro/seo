@@ -9,6 +9,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = (
+            "id",
             "domain",
             "uuid",
             "description",
