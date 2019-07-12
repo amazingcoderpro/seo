@@ -57,6 +57,8 @@ class CollectionMotifyViews(generics.CreateAPIView):
         api_obj = ProductsApi(access_token, shop_uri)
         for collection in eval(collection_list):
             collection_obj = models.Collection.objects.filter(pk=collection)
+            if not collection_obj:
+                return Response({"detail": "collection data appear exception, Please re-into this page!"}, status=status.HTTP_400_BAD_REQUEST)
             if request.data["remark_title"]:
                 title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
             else:
