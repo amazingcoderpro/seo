@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from seo_app.views import shopify_auth, personal_center, product, collection
+from seo_app.views import shopify_auth, personal_center, product, collection, webhook
 
 # 公共中心 `/v1/`
 v1_urlpatterns = [
@@ -28,9 +28,15 @@ account_urlpatterns = [
     url(r'^set_passwords/(?P<pk>[0-9]+)/$', personal_center.SetPasswordsView.as_view()),
 ]
 
+webhook_urlpatterns = [
+    url(r'products/create/$', webhook.EventProductCreate.as_view()),
+    url(r'peoducts/update/$', webhook.EventProductUpdate.as_view()),
+]
+
 
 urlpatterns = [
     url(r'^v1/account/', include(account_urlpatterns)),
     url(r'^v1/auth/', include(auth_urlpatterns)),
+    url(r'^v1/webhook/', include(webhook_urlpatterns)),
     url(r'^v1/', include(v1_urlpatterns)),
 ]
