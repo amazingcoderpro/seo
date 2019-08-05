@@ -64,7 +64,7 @@ class Product(models.Model):
     class Meta:
         unique_together = ("uuid", "store")
         db_table = 'product'
-        ordering = ["-id"]
+        ordering = ["id"]
 
 
 class Collection(models.Model):

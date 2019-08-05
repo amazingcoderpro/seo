@@ -95,8 +95,8 @@ class ProductsApi:
 
 
 if __name__ == '__main__':
-    access_token = "8588307bd5fbd3f5f85310f821c5bbee"
-    shop_uri = "charrcter.myshopify.com"
+    access_token = "c6c6b982c0c3de19e668174da7855017"
+    shop_uri = "markepink.myshopify.com"
     address = "https://autometa.seamarketings.com/api/v1/webhook/products/create/"
     topic = "products/create"
     products_api = ProductsApi(shop_uri=shop_uri, access_token=access_token)

@@ -30,7 +30,7 @@ account_urlpatterns = [
 
 webhook_urlpatterns = [
     url(r'products/create/$', webhook.EventProductCreate.as_view()),
-    url(r'peoducts/update/$', webhook.EventProductUpdate.as_view()),
+    # url(r'peoducts/update/$', webhook.EventProductUpdate.as_view()),
 ]
 
 
