@@ -49,7 +49,7 @@ class CollectionMotifyViews(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         collection_list = request.data.get("collection_list", None)
         if not collection_list:
-            return Response({"detail": "collection_list cannot be empty"},status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "collection_list cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
         access_token, shop_uri = store.token, store.url

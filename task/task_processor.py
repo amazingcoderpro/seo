@@ -204,18 +204,17 @@ class TaskProcessor:
                     # 删除当前店铺所有类目信息
                     cursor.execute("""delete from collection where store_id = %s""", (store_id,))
                     # 插入新的数据
+                    insert_list = []
                     for collection in res["data"]:
                         uuid, meta_title, address, meta_description = collection.values()
                         now_time = datetime.datetime.now()
-                        logger.info(
-                            "update collection data: {} {} {} {}".format(uuid, address, meta_title, meta_description))
-                        try:
-                            cursor.execute(
-                                '''insert into `collection` set uuid=%s, address=%s, meta_title=%s, meta_description=%s, store_id=%s, create_time=%s, update_time=%s''',
-                                (uuid, address, meta_title, meta_description, store_id, now_time, now_time))
-                            conn.commit()
-                        except Exception as e:
-                            logger.exception("update product exception.")
+                        insert_list.append((uuid, address, meta_title, meta_description, store_id, now_time, now_time))
+
+                    cursor.executemany(
+                        '''insert into `collection` set uuid=%s, address=%s, meta_title=%s, meta_description=%s, store_id=%s, create_time=%s, update_time=%s''',
+                        insert_list)
+                    conn.commit()
+                    logger.info("update shop(id=%s) collections success." % store_id)
                 else:
                     logger.warning("get shop collections failed. res={}".format(res))
 
@@ -404,4 +403,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-    # TaskProcessor().motify_product_meta()
+    # TaskProcessor().update_collection()

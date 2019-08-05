@@ -204,12 +204,12 @@ class ProductsApi:
 
 if __name__ == '__main__':
     client_id = "7fced15ff9d1a461f10979c3eae2eca8"
-    access_token = "d34263b34fa4eff4003ed20c0d5d3ef3"
-    shop = "mrbeauti.myshopify.com"
+    access_token = "c6c6b982c0c3de19e668174da7855017"
+    shop = "markepink.myshopify.com"
     scopes = "write_orders,read_customers"
     callback_uri = "http://www.orderplus.com/index.html"
     id = "3583116148816"
-    shop_uri = "mrbeauti.myshopify.com"
+    shop_uri = "markepink.myshopify.com"
     products_api = ProductsApi(access_token=access_token, shop_uri=shop_uri)
     products_api.get_all_products(limit=5)
     print(products_api.get_shop_info())
