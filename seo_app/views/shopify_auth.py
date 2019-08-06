@@ -43,7 +43,7 @@ class ShopifyCallback(APIView):
             webhooks = [
                 {'address': 'https://smartsend.seamarketings.com/api/v1/webhook/products/create/', 'topic': 'products/create'},
             ]
-            webhook_info = shopify_webhook.products_api(shop_uri=shop, access_token=result["data"])
+            webhook_info = shopify_webhook.ProductsApi(shop_uri=shop, access_token=result["data"])
             for webhook in webhooks:
                 webhook_info.create_webhook(topic=webhook.get("topic", ""), address=webhook.get("address", ""))
         return HttpResponseRedirect(redirect_to="https://autometa.seamarketings.com/shopfy_regist?shop={}&email={}&id={}".format(shop, email, user_instance.id))
@@ -62,18 +62,3 @@ class ShopifyAuthView(APIView):
         # shop_uri = shop_name + ".myshopify.com"
         permission_url = shopify_oauth_info.ShopifyBase(shop_uri).ask_permission(shop_uri)
         return HttpResponseRedirect(redirect_to=permission_url)
-
-
-class AuthUrl(APIView):
-    """shopify 授权页面"""
-    # permission_classes = (IsAuthenticated,)
-    # authentication_classes = (JSONWebTokenAuthentication,)
-
-    def get(self, request, *args, **kwargs):
-        # 获取get请求的参数
-        shop_uri = request.query_params.get("shop", None)
-        if not shop_uri:
-            return Response({"message": "no shop"})
-        # shop_uri = shop_name + ".myshopify.com"
-        permission_url = shopify_oauth_info.ShopifyBase(shop_uri).ask_permission(shop_uri)
-        return Response(permission_url)
