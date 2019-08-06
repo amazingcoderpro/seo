@@ -16,6 +16,7 @@ v1_urlpatterns = [
 auth_urlpatterns = [
     url(r'shopify/callback/$', shopify_auth.ShopifyCallback.as_view()),
     url(r'shopify/ask_permission/$', shopify_auth.ShopifyAuthView.as_view()),
+    url(r'shopify/auth_url/$', shopify_auth.AuthUrl.as_view()),
 ]
 
 # 用户中心 `/v1/account/`

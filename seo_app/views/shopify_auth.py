@@ -62,3 +62,18 @@ class ShopifyAuthView(APIView):
         # shop_uri = shop_name + ".myshopify.com"
         permission_url = shopify_oauth_info.ShopifyBase(shop_uri).ask_permission(shop_uri)
         return HttpResponseRedirect(redirect_to=permission_url)
+
+
+class AuthUrl(APIView):
+    """shopify 授权页面"""
+    # permission_classes = (IsAuthenticated,)
+    # authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self, request, *args, **kwargs):
+        # 获取get请求的参数
+        shop_uri = request.query_params.get("shop", None)
+        if not shop_uri:
+            return Response({"message": "no shop"})
+        # shop_uri = shop_name + ".myshopify.com"
+        permission_url = shopify_oauth_info.ShopifyBase(shop_uri).ask_permission(shop_uri)
+        return Response(permission_url)
