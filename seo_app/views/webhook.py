@@ -11,7 +11,7 @@ from seo_app import models
 class EventProductCreate(APIView):
 
     def post(self, request, *args, **kwargs):
-        print("------------ order paid ------------:")
+        print("------------ product create ------------:")
         print(json.dumps(request.data))
         store = models.Store.objects.filter(url=request.META["HTTP_X_SHOPIFY_SHOP_DOMAIN"]).first()
         if not store:
@@ -67,6 +67,7 @@ class EventProductCreate(APIView):
             state=0
         )
         exit_product = models.Product.objects.filter(store=store, state=2).first()
+        print("exit_product",exit_product.id)
         if not exit_product:
             return Response({"code": 200})
         remark_title = exit_product.remark_title
