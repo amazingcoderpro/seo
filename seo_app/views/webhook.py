@@ -13,11 +13,15 @@ class EventProductCreate(APIView):
     def post(self, request, *args, **kwargs):
         print("------------ product create ------------:")
         print(json.dumps(request.data))
-        store = models.Store.objects.filter(url=request.META["HTTP_X_SHOPIFY_SHOP_DOMAIN"]).first()
+        # store = models.Store.objects.filter(url=request.META["HTTP_X_SHOPIFY_SHOP_DOMAIN"]).first()
+        store = models.Store.objects.filter(url="markepink.myshopify.com").first()
         if not store:
             return Response({"code": 200})
         pro = request.data
         uuid = str(pro.get("id", ""))
+        product = models.Product.objects.filter(store=store, uuid=uuid).first()
+        if product:
+            return Response({"code": 200})
         sku = pro.get("handle", "")
         title = pro.get("title", "")
         domain = "https://{}/products/{}".format(store.url, sku)
@@ -33,6 +37,7 @@ class EventProductCreate(APIView):
         dd = dr.sub('', str(body_html))
         description = ' '.join(p.split(dd.strip().replace("\n", " "))).strip()
 
+        # variants
         variants_price_str = store.money_format
         variants_color_str = " Color"
         variants_size_str = " Size"
@@ -48,24 +53,20 @@ class EventProductCreate(APIView):
             variants_list.sort(key=variants_tmp_list.index)
             variants_str = " ".join(variants_list)
         curent_time = datetime.datetime.now()
-        product = models.Product.objects.filter(store=store, uuid=uuid).first()
-        if product:
-            return Response({"code": 200})
 
+        # remark_title remark_description
+        remark_title = ""
+        remark_description = ""
         exit_product = models.Product.objects.filter(store=store, state=2).first()
-        print("exit_product", exit_product.id)
-        print("exit_product", exit_product.remark_title)
-        print("exit_product", exit_product.remark_description)
-        if not exit_product:
-            return Response({"code": 200})
-        remark_title = exit_product.remark_title
-        remark_description = exit_product.remark_description
+        if exit_product:
+            remark_title = exit_product.remark_title
+            remark_description = exit_product.remark_description
 
         event_peoduct = models.Product.objects.create(
             thumbnail="",
             sku=sku,
             description=description,
-            variants=variants,
+            variants=variants_str,
             price=price,
             type=type,
             domain=domain,
@@ -78,24 +79,26 @@ class EventProductCreate(APIView):
             uuid=uuid,
             state=0
         )
-        # id, domain, price, uuid, type, title, remark_title, remark_description, variants, description
+        if not exit_product:
+            return Response({"code": 200})
+
         url = domain.split("//")[1].split(".")[0] + ".com"
-        remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
+        remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants_str,
                        "%Product Price%": price, "%Product Description%": description, "%Domain%": url.capitalize()}
         for row in remark_dict:
+            print(row,remark_dict[row])
             remark_title = remark_title.replace(row, remark_dict[row])
             remark_description = remark_description.replace(row, remark_dict[row])
         result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
-        print("result",result)
         if result["code"] == 1:
             event_peoduct.meta_title = remark_title
-            exit_product.meta_description = remark_description
-            exit_product.state = 2
+            event_peoduct.meta_description = remark_description
+            event_peoduct.state = 2
 
         else:
-            exit_product.error_text = result["data"]
-            exit_product.state = 3
-        exit_product.save()
+            event_peoduct.error_text = result["data"]
+            event_peoduct.state = 3
+        event_peoduct.save()
         return Response({"code": 200})
 
 
