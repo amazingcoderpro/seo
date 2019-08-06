@@ -51,6 +51,16 @@ class EventProductCreate(APIView):
         product = models.Product.objects.filter(store=store, uuid=uuid).first()
         if product:
             return Response({"code": 200})
+
+        exit_product = models.Product.objects.filter(store=store, state=2).first()
+        print("exit_product", exit_product.id)
+        print("exit_product", exit_product.remark_title)
+        print("exit_product", exit_product.remark_description)
+        if not exit_product:
+            return Response({"code": 200})
+        remark_title = exit_product.remark_title
+        remark_description = exit_product.remark_description
+
         event_peoduct = models.Product.objects.create(
             thumbnail="",
             sku=sku,
@@ -60,18 +70,14 @@ class EventProductCreate(APIView):
             type=type,
             domain=domain,
             title=title,
+            remark_title=remark_title,
+            remark_description=remark_description,
             create_time=curent_time,
             update_time=curent_time,
             store_id=store.id,
             uuid=uuid,
             state=0
         )
-        exit_product = models.Product.objects.filter(store=store, state=2).first()
-        print("exit_product",exit_product.id)
-        if not exit_product:
-            return Response({"code": 200})
-        remark_title = exit_product.remark_title
-        remark_description = exit_product.remark_description
         # id, domain, price, uuid, type, title, remark_title, remark_description, variants, description
         url = domain.split("//")[1].split(".")[0] + ".com"
         remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants,
@@ -80,7 +86,7 @@ class EventProductCreate(APIView):
             remark_title = remark_title.replace(row, remark_dict[row])
             remark_description = remark_description.replace(row, remark_dict[row])
         result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
-
+        print("result",result)
         if result["code"] == 1:
             event_peoduct.meta_title = remark_title
             exit_product.meta_description = remark_description
