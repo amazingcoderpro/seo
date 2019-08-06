@@ -48,6 +48,9 @@ class EventProductCreate(APIView):
             variants_list.sort(key=variants_tmp_list.index)
             variants_str = " ".join(variants_list)
         curent_time = datetime.datetime.now()
+        product = models.Product.objects.filter(store=store, uuid=uuid).first()
+        if product:
+            return Response({"code": 200})
         event_peoduct = models.Product.objects.create(
             thumbnail="",
             sku=sku,
@@ -63,7 +66,9 @@ class EventProductCreate(APIView):
             uuid=uuid,
             state=0
         )
-        exit_product = models.Product.objects.filter(store=store).first()
+        exit_product = models.Product.objects.filter(store=store, state=2).first()
+        if not exit_product:
+            return Response({"code": 200})
         remark_title = exit_product.remark_title
         remark_description = exit_product.remark_description
         # id, domain, price, uuid, type, title, remark_title, remark_description, variants, description
@@ -76,7 +81,7 @@ class EventProductCreate(APIView):
         result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
 
         if result["code"] == 1:
-            event_peoduct.meta_title =  remark_title
+            event_peoduct.meta_title = remark_title
             exit_product.meta_description = remark_description
             exit_product.state = 2
 
