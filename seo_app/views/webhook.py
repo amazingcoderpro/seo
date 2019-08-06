@@ -86,7 +86,6 @@ class EventProductCreate(APIView):
         remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants_str,
                        "%Product Price%": price, "%Product Description%": description, "%Domain%": url.capitalize()}
         for row in remark_dict:
-            print(row,remark_dict[row])
             remark_title = remark_title.replace(row, remark_dict[row])
             remark_description = remark_description.replace(row, remark_dict[row])
         result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
