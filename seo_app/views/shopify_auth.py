@@ -43,7 +43,7 @@ class ShopifyCallback(APIView):
             webhooks = [
                 {'address': 'https://smartsend.seamarketings.com/api/v1/webhook/products/create/', 'topic': 'products/create'},
             ]
-            webhook_info = shopify_webhook.products_api(shop_uri=shop, access_token=result["data"])
+            webhook_info = shopify_webhook.ProductsApi(shop_uri=shop, access_token=result["data"])
             for webhook in webhooks:
                 webhook_info.create_webhook(topic=webhook.get("topic", ""), address=webhook.get("address", ""))
         return HttpResponseRedirect(redirect_to="https://autometa.seamarketings.com/shopfy_regist?shop={}&email={}&id={}".format(shop, email, user_instance.id))

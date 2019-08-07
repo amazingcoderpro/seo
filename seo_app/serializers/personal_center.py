@@ -23,8 +23,9 @@ class SetPasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ("id", "username", "password", "password2", "create_time", "email")
+        fields = ("id", "password", "password2", "create_time", "email")
         extra_kwargs = {
+            # 'username':{'write_only': False, },
             'password': {'write_only': True},
             'email': {'read_only': True, },
         }
@@ -36,8 +37,8 @@ class SetPasswordSerializer(serializers.ModelSerializer):
         return attrs
 
     def update(self, instance, validated_data):
-        if instance.username == validated_data["username"] and instance.is_active == 1:
-            raise serializers.ValidationError("Please check that the input or account is activated.")
+        # if instance.username == validated_data["username"] and instance.is_active == 1:
+        #     raise serializers.ValidationError("Please check that the input or account is activated.")
         instance.is_active = 1
         instance.set_password(validated_data["password"])
         instance.save()
