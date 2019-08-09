@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
+from seo_app.filters import product as product_filter
 from seo import settings
 from seo_app import models
 from seo_app.serializers import personal_center
@@ -60,6 +60,14 @@ class SetPasswordsView(generics.UpdateAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
 
+
+class StoreView(generics.ListAPIView):
+    """店铺 展示"""
+    queryset = models.Store.objects.all()
+    serializer_class = personal_center.StoreSerializer
+    filter_backends = (product_filter.StoreFilter,)
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
 
 
 

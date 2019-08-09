@@ -72,3 +72,18 @@ class SetPasswordsSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return instance
+
+
+class StoreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Store
+        fields = ("id",
+                  "name",
+                  "collection_title",
+                  "collection_description",
+                  "product_title",
+                  "product_description"
+)
+
+

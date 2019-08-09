@@ -19,3 +19,10 @@ class ProductFilter(BaseFilterBackend):
             return []
         queryset = queryset.filter(**filte_kwargs)
         return queryset
+
+
+class StoreFilter(BaseFilterBackend):
+    """Store过滤"""
+
+    def filter_queryset(self, request, queryset, view):
+        return queryset.filter(user=request.user)

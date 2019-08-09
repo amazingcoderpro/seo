@@ -10,6 +10,8 @@ v1_urlpatterns = [
 
     url(r'collection/$', collection.CollectionViews.as_view()),
     url(r'collection_motify/$', collection.CollectionMotifyViews.as_view()),
+
+
 ]
 
 # 认证中心 `/v1/auth/`
@@ -26,6 +28,8 @@ account_urlpatterns = [
     url(r'^set_password/(?P<pk>[0-9]+)/$', personal_center.SetPasswordView.as_view()),
     # 登陆状态下设置密码
     url(r'^set_passwords/(?P<pk>[0-9]+)/$', personal_center.SetPasswordsView.as_view()),
+
+    url(r'store/$', personal_center.StoreView.as_view()),
 ]
 
 webhook_urlpatterns = [
