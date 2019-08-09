@@ -98,7 +98,7 @@ class TaskProcessor:
                 papi = ProductsApi(store[1], store[2])
                 ret = papi.get_shop_info()
                 if ret["code"] == 1:
-                    money_format = ret["data"]["shop"]["money_with_currency_format"].split("{")[0]
+                    money_format = ret["data"]["shop"]["money_with_currency_format"].split("{")[0][-1:]
                     cursor.execute(
                         '''update `store` set money_format=%s where id=%s''',
                         (money_format, store[0]))
@@ -402,5 +402,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    #main()
     # TaskProcessor().update_collection()
+    TaskProcessor().update_store()
