@@ -47,11 +47,20 @@ class CollectionMotifyViews(generics.CreateAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request, *args, **kwargs):
+
+
         collection_list = request.data.get("collection_list", None)
         if not collection_list:
             return Response({"detail": "collection_list cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
         # 调用接口更新collection信息
         store = models.Store.objects.get(user_id=request.user)
+
+        remark_title =request.data["remark_title"]
+        remark_description =request.data["remark_description"]
+        store.collection_title = remark_title
+        store.collection_description = remark_description
+        store.save()
+
         access_token, shop_uri = store.token, store.url
         domain = shop_uri.replace(".myshopify", "").capitalize() if shop_uri else ""
         api_obj = ProductsApi(access_token, shop_uri)

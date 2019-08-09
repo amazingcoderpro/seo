@@ -42,12 +42,18 @@ class ProductMotifyViews(generics.CreateAPIView):
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def create(self, request, *args, **kwargs):
+        store = models.Store.objects.filter(user=request.user).first()
         product_list = request.data.get("product_list", None)
         if not product_list:
             return Response({"detail": "product_list cannot be empty"},status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        remark_title =request.data["remark_title"]
+        remark_description =request.data["remark_description"]
+        store.product_title = remark_title
+        store.product_description = remark_description
+        store.save()
         models.Product.objects.filter(id__in=eval(product_list)).update(remark_title=request.data["remark_title"],remark_description=request.data["remark_description"], update_time=datetime.datetime.now(), state=1)
         return Response([], status=status.HTTP_200_OK)
 
