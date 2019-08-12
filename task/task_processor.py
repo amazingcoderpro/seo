@@ -226,7 +226,7 @@ class TaskProcessor:
             conn.close() if conn else 0
         return True
 
-    def update_product(self, url=""):
+    def update_product(self):
         """
          获取所有店铺的所有products, 并保存至数据库
          :return:
@@ -238,18 +238,18 @@ class TaskProcessor:
             if not cursor:
                 return False
 
-            if url:
-                cursor.execute(
-                    '''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
-                    (url,))
-            else:
-                cursor.execute(
-                    """select store.id, store.url,store.token, store.money_format from store left join user on store.user_id = user.id where user.is_active = 1""")
+            cursor.execute(
+                    """select store.id, store.url,store.token, store.money_format,product_title,product_description from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
-                store_id, store_uri, store_token,money_format = store
+                store_id, store_uri, store_token,money_format,product_title,product_description = store
+                if not product_title or not product_description:
+                    product_title, product_description = "", ""
+                    state = 0
+                else:
+                    state = 1
 
                 # 取中已经存在的所有products, 只需更新即可
                 cursor.execute('''select id, uuid from `product` where store_id=%s''', (store_id))
@@ -344,9 +344,9 @@ class TaskProcessor:
                                         (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, pro_id))
                                 else:
                                     cursor.execute(
-                                        "insert into `product` (`thumbnail`, `sku`, `description`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`) values (%s, %s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                                        "insert into `product` (`thumbnail`, `sku`, `description`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`, `remark_title`, `remark_description`) values (%s, %s, %s, %s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                                         (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, time_now,
-                                         store_id, uuid, 0))
+                                         store_id, uuid, state, product_title, product_description))
                                     pro_id = cursor.lastrowid
                                     exist_products_dict[uuid] = pro_id
                                 conn.commit()
@@ -404,5 +404,5 @@ def main():
 if __name__ == '__main__':
     #main()
     # TaskProcessor().update_collection()
-    TaskProcessor().update_store()
+    # TaskProcessor().update_store()
     TaskProcessor().update_product()

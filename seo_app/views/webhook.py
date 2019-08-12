@@ -55,8 +55,9 @@ class EventProductCreate(APIView):
         curent_time = datetime.datetime.now()
 
         # remark_title remark_description
-        remark_title = ""
-        remark_description = ""
+
+        # remark_title = ""
+        # remark_description = ""
         # exit_product = models.Product.objects.filter(store=store, state=2).first()
         # if exit_product:
         #     remark_title = exit_product.remark_title
@@ -81,27 +82,28 @@ class EventProductCreate(APIView):
             update_time=curent_time,
             store_id=store.id,
             uuid=uuid,
-            state=0
+            state=1 if remark_title else 0
         )
-        if not exit_product:
-            return Response({"code": 200})
 
-        url = domain.split("//")[1].split(".")[0] + ".com"
-        remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants_str,
-                       "%Product Price%": price, "%Product Description%": description, "%Domain%": url.capitalize()}
-        for row in remark_dict:
-            remark_title = remark_title.replace(row, remark_dict[row])
-            remark_description = remark_description.replace(row, remark_dict[row])
-        result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
-        if result["code"] == 1:
-            event_peoduct.meta_title = remark_title
-            event_peoduct.meta_description = remark_description
-            event_peoduct.state = 2
+        # if not exit_product:
+        #     return Response({"code": 200})
 
-        else:
-            event_peoduct.error_text = result["data"]
-            event_peoduct.state = 3
-        event_peoduct.save()
+        # url = domain.split("//")[1].split(".")[0] + ".com"
+        # remark_dict = {"%Product Type%": type, "%Product Title%": title, "%Variants%": variants_str,
+        #                "%Product Price%": price, "%Product Description%": description, "%Domain%": url.capitalize()}
+        # for row in remark_dict:
+        #     remark_title = remark_title.replace(row, remark_dict[row])
+        #     remark_description = remark_description.replace(row, remark_dict[row])
+        # result = ProductsApi(store.token, store.url).motify_product_meta(uuid, remark_title, remark_description)
+        # if result["code"] == 1:
+        #     event_peoduct.meta_title = remark_title
+        #     event_peoduct.meta_description = remark_description
+        #     event_peoduct.state = 2
+        #
+        # else:
+        #     event_peoduct.error_text = result["data"]
+        #     event_peoduct.state = 3
+        # event_peoduct.save()
         return Response({"code": 200})
 
 
