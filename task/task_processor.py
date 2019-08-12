@@ -350,7 +350,7 @@ class TaskProcessor:
                                     pro_id = cursor.lastrowid
 
                                 conn.commit()
-                                uuid_list.append(uuid)
+                                exist_products_dict
                             except Exception as e:
                                 logger.exception("update product exception.")
 

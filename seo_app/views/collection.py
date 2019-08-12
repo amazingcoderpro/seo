@@ -39,8 +39,8 @@ class CollectionViews(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class CollectionMotifyViews(generics.CreateAPIView):
-    """修改类目信息"""
+class CollectionAllMotifyViews(generics.CreateAPIView):
+    """修改所有类目信息"""
     queryset = models.Collection.objects.all()
     serializer_class = collection_serializers.CollectionMotifySerializer
     permission_classes = (IsAuthenticated,)
@@ -60,6 +60,48 @@ class CollectionMotifyViews(generics.CreateAPIView):
         store.collection_title = remark_title
         store.collection_description = remark_description
         store.save()
+
+        access_token, shop_uri = store.token, store.url
+        domain = shop_uri.replace(".myshopify", "").capitalize() if shop_uri else ""
+        api_obj = ProductsApi(access_token, shop_uri)
+        for collection in eval(collection_list):
+            collection_obj = models.Collection.objects.filter(pk=collection)
+            if not collection_obj:
+                return Response({"detail": "collection data appear exception, Please re-into this page!"}, status=status.HTTP_400_BAD_REQUEST)
+            if request.data["remark_title"]:
+                title = request.data["remark_title"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            else:
+                title = ""
+            if request.data["remark_description"]:
+                description = request.data["remark_description"].replace("%Product Type%", collection_obj.first().meta_title).replace("%Domain%", domain)
+            else:
+                description = ""
+            title_res = api_obj.update_collection_seo_title(collection_obj.first().uuid, title)
+            description_res = api_obj.update_collection_seo_description(collection_obj.first().uuid, description)
+            if title_res["code"] == 1 and description_res["code"] == 1:
+                collection_obj.update(remark_title=request.data["remark_title"], remark_description=request.data["remark_description"],
+                                      update_time=datetime.datetime.now())
+                logger.info("update collection({}) success.".format(collection_obj.first().meta_title))
+            else:
+                logger.info("update collection({}) failed. error is {}".format(collection_obj.first().meta_title, description_res["msg"] if title_res["code"]==1 else title_res["msg"]))
+                return Response({"detail": description_res["msg"] if title_res["code"]==1 else title_res["msg"]}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "update all collections success."}, status=status.HTTP_200_OK)
+
+
+class CollectionMotifyViews(generics.CreateAPIView):
+    """修改类目信息"""
+    queryset = models.Collection.objects.all()
+    serializer_class = collection_serializers.CollectionMotifySerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def post(self, request, *args, **kwargs):
+
+        collection_list = request.data.get("collection_list", None)
+        if not collection_list:
+            return Response({"detail": "collection_list cannot be empty"}, status=status.HTTP_400_BAD_REQUEST)
+        # 调用接口更新collection信息
+        store = models.Store.objects.get(user_id=request.user)
 
         access_token, shop_uri = store.token, store.url
         domain = shop_uri.replace(".myshopify", "").capitalize() if shop_uri else ""

@@ -34,8 +34,8 @@ class ProductViews(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class ProductMotifyViews(generics.CreateAPIView):
-    """修改产品信息"""
+class ProducAlltMotifyViews(generics.CreateAPIView):
+    """修改所有产品信息"""
     queryset = models.Product.objects.all()
     serializer_class = product_serializers.ProductMotifySerializer
     permission_classes = (IsAuthenticated,)
@@ -54,6 +54,30 @@ class ProductMotifyViews(generics.CreateAPIView):
         store.product_title = remark_title
         store.product_description = remark_description
         store.save()
+        models.Product.objects.filter(id__in=eval(product_list)).update(remark_title=request.data["remark_title"],remark_description=request.data["remark_description"], update_time=datetime.datetime.now(), state=1)
+        return Response([], status=status.HTTP_200_OK)
+
+
+class ProductMotifyViews(generics.CreateAPIView):
+    """修改产品信息"""
+    queryset = models.Product.objects.all()
+    serializer_class = product_serializers.ProductMotifySerializer
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def create(self, request, *args, **kwargs):
+        store = models.Store.objects.filter(user=request.user).first()
+        product_list = request.data.get("product_list", None)
+        if not product_list:
+            return Response({"detail": "product_list cannot be empty"},status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        # remark_title =request.data["remark_title"]
+        # remark_description =request.data["remark_description"]
+        # store.product_title = remark_title
+        # store.product_description = remark_description
+        # store.save()
         models.Product.objects.filter(id__in=eval(product_list)).update(remark_title=request.data["remark_title"],remark_description=request.data["remark_description"], update_time=datetime.datetime.now(), state=1)
         return Response([], status=status.HTTP_200_OK)
 

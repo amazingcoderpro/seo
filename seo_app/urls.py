@@ -4,11 +4,13 @@ from seo_app.views import shopify_auth, personal_center, product, collection, we
 # 公共中心 `/v1/`
 v1_urlpatterns = [
     url(r'product/$', product.ProductViews.as_view()),
+    url(r'product_all/motify/$', product.ProducAlltMotifyViews.as_view()),
     url(r'product_motify/$', product.ProductMotifyViews.as_view()),
     url(r'product_categores/$', product.ProductCategoresViews.as_view()),
     url(r'product_categoresmotify/$', product.ProductCategoresMotifyViews.as_view()),
 
     url(r'collection/$', collection.CollectionViews.as_view()),
+    url(r'collection_all/motify/$', collection.CollectionAllMotifyViews.as_view()),
     url(r'collection_motify/$', collection.CollectionMotifyViews.as_view()),
 
 
