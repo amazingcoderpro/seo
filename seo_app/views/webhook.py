@@ -57,10 +57,14 @@ class EventProductCreate(APIView):
         # remark_title remark_description
         remark_title = ""
         remark_description = ""
-        exit_product = models.Product.objects.filter(store=store, state=2).first()
-        if exit_product:
-            remark_title = exit_product.remark_title
-            remark_description = exit_product.remark_description
+        # exit_product = models.Product.objects.filter(store=store, state=2).first()
+        # if exit_product:
+        #     remark_title = exit_product.remark_title
+        #     remark_description = exit_product.remark_description
+
+        remark_title = store.product_title if store.product_title else ""
+        remark_description = store.product_description if store.product_description else ""
+
 
         event_peoduct = models.Product.objects.create(
             thumbnail="",

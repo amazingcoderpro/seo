@@ -303,16 +303,17 @@ class TaskProcessor:
                             dd = dr.sub('', str(body_html))
                             description = ' '.join(p.split(dd.strip().replace("\n", " "))).strip()
 
-                            variants_price_str = money_format
+                            # variants_price_str = money_format
                             variants_color_str = " Color"
                             variants_size_str = " Size"
                             variants_str = ""
                             if variants:
                                 for item in variants:
-                                    variants_price_str += " " + item["price"]
+                                    # variants_price_str += " " + item["price"]
                                     variants_color_str += " " + item["option1"]
                                     variants_size_str += " " + item["option2"] if item["option2"] else ""
-                                tmp_str = variants_price_str + variants_color_str + variants_size_str
+                                # tmp_str = variants_price_str + variants_color_str + variants_size_str
+                                tmp_str = variants_color_str + variants_size_str
                                 variants_tmp_list = tmp_str.split(" ")
                                 variants_list = list(set(variants_tmp_list))
                                 variants_list.sort(key=variants_tmp_list.index)
@@ -405,3 +406,4 @@ if __name__ == '__main__':
     #main()
     # TaskProcessor().update_collection()
     TaskProcessor().update_store()
+    TaskProcessor().update_product()
