@@ -348,9 +348,8 @@ class TaskProcessor:
                                         (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, time_now,
                                          store_id, uuid, 0))
                                     pro_id = cursor.lastrowid
-
+                                    exist_products_dict[uuid] = pro_id
                                 conn.commit()
-                                exist_products_dict
                             except Exception as e:
                                 logger.exception("update product exception.")
 
