@@ -57,7 +57,7 @@ class TaskProcessor:
         self.update_store_job = None
 
 
-    def start_all(self, update_store=3600, product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600):
+    def start_all(self, update_store=3600, product_collections_meta_interval=3600, product_meta_interval=600, product_interval=3600*2):
         logger.info("TaskProcessor start all work.")
         # 更新店铺信息
         self.update_store()
