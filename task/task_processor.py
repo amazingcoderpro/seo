@@ -178,7 +178,7 @@ class TaskProcessor:
 
             if url:
                 cursor.execute(
-                    '''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and url=%s''',
+                    '''select store.id, store.url,store.token from store left join user on store.user_id = user.id where user.is_active = 1 and store.url=%s''',
                     (url,))
             else:
                 cursor.execute(
@@ -403,6 +403,6 @@ def main():
 
 if __name__ == '__main__':
     #main()
-    # TaskProcessor().update_collection()
-    # TaskProcessor().update_store()
+    #TaskProcessor().update_collection(url="theccenter.myshopify.com")
+    #TaskProcessor().update_store()
     TaskProcessor().update_product()
