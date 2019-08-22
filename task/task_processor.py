@@ -242,6 +242,8 @@ class TaskProcessor:
             cursor.execute(
                     """select store.id, store.url,store.token, store.money_format,product_title,product_description from store left join user on store.user_id = user.id where user.is_active = 1""")
             stores = cursor.fetchall()
+            cursor.close()
+            conn.close()
 
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
@@ -254,24 +256,27 @@ class TaskProcessor:
                     state = 1
 
                 # 取中已经存在的所有products, 只需更新即可
+                conn = DBUtil().get_instance()
+                cursor = conn.cursor() if conn else None
+                if not cursor:
+                    continue
+
                 cursor.execute('''select id, uuid from `product` where store_id=%s''', (store_id))
                 exist_products = cursor.fetchall()
                 exist_products_dict = {}
                 for exp in exist_products:
                     exist_products_dict[exp[1]] = exp[0]
 
-                if not all([store_uri, store_token]):
+                if not all([store_uri, store_token]) or ("shopify" not in store_uri):
                     logger.warning("[update_product]: store url or token is invalid, store id={}".format(store_id))
-                    continue
-
-                if "shopify" not in store_uri:
+                    cursor.close()
+                    conn.close()
                     continue
 
                 # 更新产品信息
                 papi = ProductsApi(store_token, store_uri)
-
                 since_id = ""
-                max_fetch = 50  # 不管拉没拉完，最多拉250＊50个产品
+                max_fetch = 500  # 不管拉没拉完，最多拉250＊500个产品
                 uuid_list = []
                 while max_fetch > 0:
                     max_fetch -= 1
@@ -348,11 +353,10 @@ class TaskProcessor:
                                          store_id, uuid, state, product_title, product_description))
                                     pro_id = cursor.lastrowid
                                     logger.info("[update_product]: insert data store_id={} pro_uuid={}, pro_id={}".format(store_id, uuid, pro_id))
-                                    # conn.commit()
+                                    conn.commit()
                                     exist_products_dict[uuid] = pro_id
                             except Exception as e:
                                 logger.exception("[update_product]: update product exception store_id={} error={}".format(store_id, str(e)))
-                        conn.commit()
                         # 拉完了
                         if len(products) < 250:
                             break
@@ -360,12 +364,12 @@ class TaskProcessor:
                             since_id = products[-1].get("id", "")
                             if not since_id:
                                 break
+
+                cursor.close()
+                conn.close()
         except Exception as e:
             logger.exception("[update_product]: get_products e={}".format(e))
             return False
-        finally:
-            cursor.close() if cursor else 0
-            conn.close() if conn else 0
         return True
 
     def image_2_base64(self, image_src, is_thumb=True, size=(70, 70), format='png'):
