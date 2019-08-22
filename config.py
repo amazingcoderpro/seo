@@ -3,11 +3,25 @@
 # Created by charles on 2019-05-13
 # Function: 
 
+import os
 import logging
 from log_config import log_config
 
-log_config.init_log_config("logs", "seo")
-logger = logging.getLogger()
+logging.getLogger("requests").setLevel(logging.ERROR)
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+logging.getLogger("urllib2").setLevel(logging.ERROR)
+logging.getLogger("apscheduler").setLevel(logging.ERROR)
+logging.getLogger("pymysql").setLevel(logging.ERROR)
+logging.getLogger("pymongo").setLevel(logging.ERROR)
+logging.getLogger("PIL").setLevel(logging.ERROR)
+logging.getLogger("google-api-python-client").setLevel(logging.ERROR)
+
+WHEN = os.getenv("WHEN", 'midnight')
+INTERVAL = os.getenv("INTERVAL", 1)
+
+log_config.FORMATTER = "%(asctime)s [%(filename)s:%(funcName)s:%(lineno)d] %(levelname)s %(message)s"
+log_config.init_log_config("logs", "seo", when=WHEN, interval=INTERVAL, backup_count=20, crated_time_in_file_name=False)
+logger = logging .getLogger()
 
 SHOPIFY_CONFIG = {
     "client_id": "a09fec07bed3a3db749cfed6029dcdef",

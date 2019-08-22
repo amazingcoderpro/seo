@@ -88,7 +88,8 @@ class TaskProcessor:
                 return False
 
             cursor.execute(
-                '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
+                # '''select store.id,store.token,store.url from store left join user on store.user_id = user.id where user.is_active = 1''')
+                '''select store.id,store.token,store.url from store left join user on store.user_id = user.id''')
             stores = cursor.fetchall()
             if not stores:
                 logger.info("there have no new store to analyze.")
@@ -231,7 +232,7 @@ class TaskProcessor:
          获取所有店铺的所有products, 并保存至数据库
          :return:
          """
-        logger.info("update_product is cheking...")
+        logger.info("[update_product]: is cheking...")
         try:
             conn = DBUtil().get_instance()
             cursor = conn.cursor() if conn else None
@@ -245,6 +246,7 @@ class TaskProcessor:
             # 遍历数据库中的所有store，更新产品信息
             for store in stores:
                 store_id, store_uri, store_token,money_format,product_title,product_description = store
+                logger.info("[update_product]: is begin get data store_id={}".format(store_id))
                 if not product_title or not product_description:
                     product_title, product_description = "", ""
                     state = 0
@@ -259,11 +261,10 @@ class TaskProcessor:
                     exist_products_dict[exp[1]] = exp[0]
 
                 if not all([store_uri, store_token]):
-                    logger.warning("store url or token is invalid, store id={}".format(store_id))
+                    logger.warning("[update_product]: store url or token is invalid, store id={}".format(store_id))
                     continue
 
                 if "shopify" not in store_uri:
-                    logger.error("store uri={}, not illegal")
                     continue
 
                 # 更新产品信息
@@ -276,13 +277,11 @@ class TaskProcessor:
                     max_fetch -= 1
                     ret = papi.get_all_products(limit=250, since_id=since_id)
                     if ret["code"] != 1:
-                        logger.warning("get shop products failed. ret={}".format(ret))
+                        logger.warning("[update_product]: get shop products failed store_id={} ret={}".format(store_id,ret))
                         break
                     if ret["code"] == 1:
                         products = ret["data"].get("products", [])
-                        logger.info("get all products succeed, limit=250, since_id={}, len products={}".format(since_id,
-                                                                                                               len(
-                                                                                                                   products)))
+                        logger.info("[update_product]: get all products succeed, limit=250, since_id={}, len products={}".format(since_id,len(products)))
                         p = re.compile(r"\s+")
                         dr = re.compile(r'<[^>]+>', re.S)
                         for pro in products:
@@ -328,31 +327,32 @@ class TaskProcessor:
                                 pro_image = ""
                             thumbnail = self.image_2_base64(pro_image)
 
-                            logger.info(
-                                "update product data: {} {} {} {} {} {} {} {} {} {}".format(sku, variants_str, price,
+                            logger.info("[update_product]: store_id={} data={} {} {} {} {} {} {} {} {} {}".format(store_id, sku, variants_str, price,
                                                                                             type, domain, title,
                                                                                             time_now, time_now,
                                                                                             store_id, uuid))
                             try:
                                 if uuid in exist_products_dict.keys():
+                                    pass
                                     pro_id = exist_products_dict[uuid]
-                                    logger.info(
-                                        "product is already exist, pro_uuid={}, pro_id={}".format(uuid, pro_id))
-
-                                    cursor.execute(
-                                        '''update `product` set thumbnail=%s, sku=%s,description=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
-                                        (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, pro_id))
+                                    logger.info("[update_product]: product is already exist store_id={} pro_uuid={}, pro_id={}".format(store_id, uuid, pro_id))
+                                    #
+                                    # cursor.execute(
+                                    #     '''update `product` set thumbnail=%s, sku=%s,description=%s, variants=%s, price=%s, type=%s, domain=%s, title=%s, update_time=%s where id=%s''',
+                                    #     (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, pro_id))
+                                    # conn.commit()
                                 else:
                                     cursor.execute(
                                         "insert into `product` (`thumbnail`, `sku`, `description`, `variants`, `price`, `type`,`domain`, `title`,`create_time`, `update_time`, `store_id`, `uuid`, `state`, `remark_title`, `remark_description`) values (%s, %s, %s, %s, %s,%s,%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                                         (thumbnail, sku, description, variants_str, price, type, domain, title, time_now, time_now,
                                          store_id, uuid, state, product_title, product_description))
                                     pro_id = cursor.lastrowid
+                                    logger.info("[update_product]: insert data store_id={} pro_uuid={}, pro_id={}".format(store_id, uuid, pro_id))
+                                    # conn.commit()
                                     exist_products_dict[uuid] = pro_id
-                                conn.commit()
                             except Exception as e:
-                                logger.exception("update product exception.")
-
+                                logger.exception("[update_product]: update product exception store_id={} error={}".format(store_id, str(e)))
+                        conn.commit()
                         # 拉完了
                         if len(products) < 250:
                             break
@@ -361,7 +361,7 @@ class TaskProcessor:
                             if not since_id:
                                 break
         except Exception as e:
-            logger.exception("get_products e={}".format(e))
+            logger.exception("[update_product]: get_products e={}".format(e))
             return False
         finally:
             cursor.close() if cursor else 0
